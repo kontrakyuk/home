@@ -1,952 +1,616 @@
-<!DOCTYPE html>
-<html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Temukan rumah kontrakan" />
-    <meta name="keywords" content="sewa kontrakan rumah, ruko, gedung, apartemen" />
-    <meta name="author" content="kontrak yuk" />
-    <title>Sewa Kontrakan - Kontrak Yuk</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
-
-    <!-- Add the slick-theme.css if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="asset/slick/slick.css" />
-
-    <!-- Add the slick-theme.css if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="asset/slick/slick-theme.css" />
-
-    <!-- Add the tailwind.css if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="asset/tailwind.css" />
-
-    <!-- Add the Control FullScreen if you want default styling -->
-    <link rel="stylesheet" type="text/css" href="asset/leaflet fullscreen/Control.FullScreen.css" />
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-    <style>
-      #map {
-        height: 90vh;
-        width: 100%;
-      }
-
-      .swal2-backdrop-show {
-        z-index: 100000;
-      }
-
-      .blink {
-        animation: blink-animation 5s infinite;
-      }
-      @keyframes blink-animation {
-        0%,
-        20%,
-        80%,
-        100% {
-          color: #b91c1c;
-        }
-        50% {
-          color: #161616;
-        }
-      }
-      .select2-selection {
-        -webkit-box-shadow: 0;
-        box-shadow: 0;
-        background-color: #fff;
-        border: 0;
-        border-radius: 0;
-        color: #555555;
-        outline: 0;
-        min-height: 38px;
-        text-align: left;
-      }
-
-      .select2-selection__rendered {
-        margin: 5px;
-      }
-
-      .select2-selection__arrow {
-        margin: 5px;
-      }
-    </style>
-  </head>
-
-  <body class="bg-white text-gray-800">
-    <div class="fixed bottom-5 right-5 flex flex-col items-center z-[1100]">
-      <div id="contact-options" class="hidden mb-2 space-y-2">
-        <div class="relative group">
-          <span class="absolute -left-24 top-[20%] bg-gray-800 text-sm text-white rounded-md py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">WhatsApp</span>
-          <a href="https://wa.me/6282231320160" target="_blank" class="flex items-center px-4 py-4 bg-white border border-1 border-gray-300 rounded-full shadow-md">
-            <svg class="w-6 fill-gray-800" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6.014 8.00613C6.12827 7.1024 7.30277 5.87414 8.23488 6.01043L8.23339 6.00894C9.14051 6.18132 9.85859 7.74261 10.2635 8.44465C10.5504 8.95402 10.3641 9.4701 10.0965 9.68787C9.7355 9.97883 9.17099 10.3803 9.28943 10.7834C9.5 11.5 12 14 13.2296 14.7107C13.695 14.9797 14.0325 14.2702 14.3207 13.9067C14.5301 13.6271 15.0466 13.46 15.5548 13.736C16.3138 14.178 17.0288 14.6917 17.69 15.27C18.0202 15.546 18.0977 15.9539 17.8689 16.385C17.4659 17.1443 16.3003 18.1456 15.4542 17.9421C13.9764 17.5868 8 15.27 6.08033 8.55801C5.97237 8.24048 5.99955 8.12044 6.014 8.00613Z" />
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 23C10.7764 23 10.0994 22.8687 9 22.5L6.89443 23.5528C5.56462 24.2177 4 23.2507 4 21.7639V19.5C1.84655 17.492 1 15.1767 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23ZM6 18.6303L5.36395 18.0372C3.69087 16.4772 3 14.7331 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C11.0143 21 10.552 20.911 9.63595 20.6038L8.84847 20.3397L6 21.7639V18.6303Z" />
-            </svg>
-          </a>
-        </div>
-        <div class="relative group">
-          <span class="absolute -left-24 top-[20%] bg-gray-800 text-sm text-white rounded-md py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Telegram</span>
-          <a href="https://t.me/kontrakyuk" target="_blank" class="flex items-center px-4 py-4 bg-white border border-1 border-gray-300 rounded-full shadow-md">
-            <svg class="w-6 fill-gray-800" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M23.1117 4.49449C23.4296 2.94472 21.9074 1.65683 20.4317 2.227L2.3425 9.21601C0.694517 9.85273 0.621087 12.1572 2.22518 12.8975L6.1645 14.7157L8.03849 21.2746C8.13583 21.6153 8.40618 21.8791 8.74917 21.968C9.09216 22.0568 9.45658 21.9576 9.70712 21.707L12.5938 18.8203L16.6375 21.8531C17.8113 22.7334 19.5019 22.0922 19.7967 20.6549L23.1117 4.49449ZM3.0633 11.0816L21.1525 4.0926L17.8375 20.2531L13.1 16.6999C12.7019 16.4013 12.1448 16.4409 11.7929 16.7928L10.5565 18.0292L10.928 15.9861L18.2071 8.70703C18.5614 8.35278 18.5988 7.79106 18.2947 7.39293C17.9906 6.99479 17.4389 6.88312 17.0039 7.13168L6.95124 12.876L3.0633 11.0816ZM8.17695 14.4791L8.78333 16.6015L9.01614 15.321C9.05253 15.1209 9.14908 14.9366 9.29291 14.7928L11.5128 12.573L8.17695 14.4791Z" />
-            </svg>
-          </a>
-        </div>
-        <div class="relative group">
-          <span class="absolute -left-24 top-[20%] bg-gray-800 text-sm text-white rounded-md py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">Facebook</span>
-          <a href="https://facebook.com/sofiul.ruslan" target="_blank" class="flex items-center px-4 py-4 bg-white border border-1 border-gray-300 rounded-full shadow-md">
-            <svg class="w-6 fill-gray-800" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.3 9.6C17.6314 9.15817 17.5418 8.53137 17.1 8.2C16.6582 7.86863 16.0314 7.95817 15.7 8.4L13.3918 11.4776L11.2071 9.29289C11.0021 9.08791 10.7183 8.98197 10.4291 9.00252C10.1399 9.02307 9.87393 9.16809 9.7 9.4L6.7 13.4C6.36863 13.8418 6.45817 14.4686 6.9 14.8C7.34183 15.1314 7.96863 15.0418 8.3 14.6L10.6082 11.5224L12.7929 13.7071C12.9979 13.9121 13.2817 14.018 13.5709 13.9975C13.8601 13.9769 14.1261 13.8319 14.3 13.6L17.3 9.6Z" />
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 23C10.7764 23 10.0994 22.8687 9 22.5L6.89443 23.5528C5.56462 24.2177 4 23.2507 4 21.7639V19.5C1.84655 17.492 1 15.1767 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23ZM6 18.6303L5.36395 18.0372C3.69087 16.4772 3 14.7331 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C11.0143 21 10.552 20.911 9.63595 20.6038L8.84847 20.3397L6 21.7639V18.6303Z" />
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <button id="contact-button" class="relative flex items-center justify-center w-16 h-16 bg-white border border-1 border-red-300 text-white rounded-full shadow-lg focus:outline-none">
-        <svg class="w-8 fill-red-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M10.8693 21.5102L11.5147 21.8922L10.8693 21.5102ZM11.1288 21.0719L10.4833 20.6899L11.1288 21.0719ZM8.87121 21.0719L9.51663 20.6899L9.51662 20.6899L8.87121 21.0719ZM9.13064 21.5102L8.48523 21.8922L9.13064 21.5102ZM2.30448 17.1308L2.99739 16.8438H2.99739L2.30448 17.1308ZM6.28931 19.585L6.31328 18.8354L6.28931 19.585ZM4.46927 19.2956L4.18225 19.9885H4.18225L4.46927 19.2956ZM17.6955 17.1308L18.3884 17.4178L18.3884 17.4178L17.6955 17.1308ZM13.7107 19.585L13.6867 18.8354L13.7107 19.585ZM15.5307 19.2956L15.8177 19.9885L15.5307 19.2956ZM16.09 6.58944L16.4819 5.94996V5.94996L16.09 6.58944ZM17.4106 7.91001L18.05 7.51814V7.51814L17.4106 7.91001ZM3.91001 6.58944L3.51813 5.94996V5.94996L3.91001 6.58944ZM2.58944 7.91001L1.94996 7.51814H1.94996L2.58944 7.91001ZM7.91637 19.8223L7.53453 20.4679H7.53453L7.91637 19.8223ZM11.5147 21.8922L11.7742 21.4539L10.4833 20.6899L10.2239 21.1282L11.5147 21.8922ZM8.22579 21.4539L8.48523 21.8922L9.77606 21.1282L9.51663 20.6899L8.22579 21.4539ZM10.2239 21.1282C10.1785 21.2049 10.0992 21.25 9.99998 21.25C9.90074 21.25 9.82147 21.2049 9.77606 21.1282L8.48523 21.8922C9.16217 23.0359 10.8378 23.0359 11.5147 21.8922L10.2239 21.1282ZM8.8 6.75H11.2V5.25H8.8V6.75ZM17.25 12.8V13.6H18.75V12.8H17.25ZM2.75 13.6V12.8H1.25V13.6H2.75ZM1.25 13.6C1.25 14.5217 1.24959 15.2504 1.2898 15.8397C1.33047 16.4357 1.41517 16.9436 1.61157 17.4178L2.99739 16.8438C2.88931 16.5828 2.82178 16.2573 2.78632 15.7376C2.75041 15.2112 2.75 14.5422 2.75 13.6H1.25ZM6.31328 18.8354C5.52102 18.81 5.09046 18.7411 4.75628 18.6027L4.18225 19.9885C4.77912 20.2357 5.43744 20.3081 6.26533 20.3346L6.31328 18.8354ZM1.61157 17.4178C2.09367 18.5817 3.01837 19.5064 4.18225 19.9885L4.75628 18.6027C3.95994 18.2728 3.32725 17.6401 2.99739 16.8438L1.61157 17.4178ZM17.25 13.6C17.25 14.5422 17.2496 15.2112 17.2137 15.7376C17.1782 16.2573 17.1107 16.5828 17.0026 16.8438L18.3884 17.4178C18.5848 16.9436 18.6695 16.4357 18.7102 15.8397C18.7504 15.2504 18.75 14.5217 18.75 13.6H17.25ZM13.7346 20.3346C14.5625 20.3081 15.2209 20.2357 15.8177 19.9885L15.2437 18.6027C14.9095 18.7411 14.479 18.81 13.6867 18.8354L13.7346 20.3346ZM17.0026 16.8438C16.6728 17.6401 16.0401 18.2728 15.2437 18.6027L15.8177 19.9885C16.9816 19.5064 17.9063 18.5817 18.3884 17.4178L17.0026 16.8438ZM11.2 6.75C12.5239 6.75 13.4641 6.75079 14.1953 6.82031C14.9154 6.88877 15.3548 7.01855 15.6981 7.22892L16.4819 5.94996C15.8633 5.57089 15.1671 5.40595 14.3373 5.32705C13.5187 5.24921 12.4949 5.25 11.2 5.25V6.75ZM18.75 12.8C18.75 11.5052 18.7508 10.4814 18.673 9.6627C18.5941 8.83288 18.4291 8.13673 18.05 7.51814L16.7711 8.30189C16.9814 8.64518 17.1112 9.08466 17.1797 9.80468C17.2492 10.5359 17.25 11.4761 17.25 12.8H18.75ZM15.6981 7.22892C16.1354 7.4969 16.5031 7.86458 16.7711 8.30189L18.05 7.51814C17.6584 6.879 17.121 6.34163 16.4819 5.94996L15.6981 7.22892ZM8.8 5.25C7.50515 5.25 6.48135 5.24921 5.66269 5.32705C4.83287 5.40595 4.13672 5.57089 3.51813 5.94996L4.30188 7.22892C4.64517 7.01855 5.08465 6.88877 5.80467 6.82031C6.53585 6.75079 7.47611 6.75 8.8 6.75V5.25ZM2.75 12.8C2.75 11.4761 2.75079 10.5359 2.82031 9.80468C2.88877 9.08466 3.01855 8.64518 3.22892 8.30189L1.94996 7.51814C1.57089 8.13673 1.40595 8.83288 1.32705 9.6627C1.24921 10.4814 1.25 11.5052 1.25 12.8H2.75ZM3.51813 5.94996C2.87899 6.34163 2.34162 6.879 1.94996 7.51814L3.22892 8.30189C3.4969 7.86458 3.86458 7.4969 4.30188 7.22892L3.51813 5.94996ZM9.51662 20.6899C9.31582 20.3506 9.13969 20.0516 8.96888 19.8164C8.78917 19.569 8.58327 19.3454 8.29822 19.1768L7.53453 20.4679C7.58064 20.4951 7.64427 20.5451 7.75524 20.6979C7.87511 20.863 8.01082 21.0907 8.2258 21.4539L9.51662 20.6899ZM6.26533 20.3346C6.71078 20.3489 6.99552 20.3587 7.21182 20.3851C7.41631 20.41 7.49305 20.4433 7.53453 20.4679L8.29822 19.1768C8.00853 19.0055 7.70371 18.9339 7.39344 18.8961C7.09498 18.8597 6.73177 18.8488 6.31328 18.8354L6.26533 20.3346ZM11.7742 21.4539C11.9891 21.0907 12.1249 20.863 12.2447 20.6979C12.3557 20.5451 12.4193 20.4951 12.4654 20.4679L11.7018 19.1768C11.4167 19.3454 11.2108 19.569 11.0311 19.8164C10.8603 20.0516 10.6841 20.3506 10.4833 20.6899L11.7742 21.4539ZM13.6867 18.8354C13.2682 18.8488 12.905 18.8597 12.6065 18.8961C12.2963 18.9339 11.9914 19.0055 11.7018 19.1768L12.4654 20.4679C12.5069 20.4433 12.5837 20.41 12.7881 20.3851C13.0044 20.3587 13.2892 20.3489 13.7346 20.3346L13.6867 18.8354Z"
-          />
-          <path
-            d="M21.7145 12.4351L22.4074 12.7221V12.7221L21.7145 12.4351ZM19.685 14.4646L19.972 15.1575H19.972L19.685 14.4646ZM20.2093 2.5526L19.8174 3.19208V3.19208L20.2093 2.5526ZM21.4473 3.79064L22.0868 3.39876V3.39876L21.4473 3.79064ZM8.79058 2.5526L8.3987 1.91312V1.91312L8.79058 2.5526ZM7.55255 3.79064L6.91307 3.39876H6.91307L7.55255 3.79064ZM13.3749 2.75H15.6249V1.25H13.3749V2.75ZM21.2499 8.37503V9.12503H22.7499V8.37503H21.2499ZM21.2499 9.12503C21.2499 10.0089 21.2495 10.6343 21.216 11.1258C21.1829 11.6106 21.1201 11.9101 21.0216 12.1481L22.4074 12.7221C22.5943 12.2709 22.6742 11.7891 22.7125 11.2279C22.7504 10.6735 22.7499 9.98841 22.7499 9.12503H21.2499ZM21.0216 12.1481C20.7171 12.8832 20.1331 13.4672 19.398 13.7717L19.972 15.1575C21.0747 14.7008 21.9507 13.8247 22.4074 12.7221L21.0216 12.1481ZM15.6249 2.75C16.867 2.75 17.7459 2.75079 18.4286 2.81571C19.1002 2.87956 19.5042 3.00013 19.8174 3.19208L20.6012 1.91312C20.0127 1.55247 19.352 1.39674 18.5706 1.32244C17.8004 1.24921 16.838 1.25 15.6249 1.25V2.75ZM22.7499 8.37503C22.7499 7.16201 22.7507 6.19958 22.6775 5.42935C22.6032 4.64796 22.4475 3.98729 22.0868 3.39876L20.8079 4.18251C20.9998 4.49574 21.1204 4.89973 21.1842 5.57133C21.2492 6.25408 21.2499 7.13296 21.2499 8.37503H22.7499ZM19.8174 3.19208C20.2211 3.43945 20.5605 3.77884 20.8079 4.18251L22.0868 3.39876C21.7158 2.79326 21.2067 2.28417 20.6012 1.91312L19.8174 3.19208ZM13.3749 1.25C12.1619 1.25 11.1995 1.24921 10.4293 1.32244C9.64789 1.39674 8.98723 1.55247 8.3987 1.91312L9.18245 3.19208C9.49568 3.00013 9.89967 2.87956 10.5713 2.81571C11.254 2.75079 12.1329 2.75 13.3749 2.75V1.25ZM8.3987 1.91312C7.7932 2.28417 7.28412 2.79326 6.91307 3.39876L8.19203 4.18251C8.43939 3.77884 8.77879 3.43945 9.18245 3.19208L8.3987 1.91312ZM7.78219 6.03896C7.83215 5.07858 7.95706 4.56594 8.19203 4.18251L6.91307 3.39876C6.47594 4.11209 6.33747 4.93717 6.28422 5.96104L7.78219 6.03896ZM18.0249 15.4848C18.7916 15.4593 19.4094 15.3906 19.972 15.1575L19.398 13.7717C19.096 13.8968 18.7039 13.9614 17.9751 13.9857L18.0249 15.4848Z"
-          />
-          <path class="stroke-red-500" d="M6.50928 13H6.51828M10 13H10.009M13.491 13H13.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        <span id="contact-bubble-popup-text" class="absolute -left-52 px-3 py-1 bg-white text-md text-gray-800 border border-1 border-red-300 rounded-md"> Kamu butuh bantuan? </span>
-      </button>
-    </div>
-
-    <header class="bg-white shadow-md py-6 mb-12">
-      <div class="mx-auto px-2 md:px-8 w-full flex mx-auto flex gap-4 items-center justify-between">
-        <div class="flex flex-row gap-2">
-          <svg class="w-8 stroke-red-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path opacity="0.5" d="M2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495C22.2051 9.00229 22.0154 10.3208 21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579Z" stroke-width="1.5" />
-            <path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-          <h1 class="text-2xl font-bold text-red-500">KontrakYuk</h1>
-        </div>
-        <div class="flex space-x-8">
-          <a href="https://wa.me/6282231320160?text=Halo KontrakYuk,%20saya%20ingin%20kerjasama%20dan%20mendaftarkan%20properti%20saya%20di%20kontrakyuk" target="_blank" class="text-gray-600 hover:text-gray-400">Daftarkan kontrakan anda</a>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- Hero Section -->
-      <section class="mx-auto px-2 md:px-8 mb-10 md:mb-24 h-full w-full flex flex-col">
-        <div class="relative flex flex-col-reverse md:flex-col gap-4 md:gap-0 md:flex-row md:h-fit items-end">
-          <!-- Box Text (20%) -->
-          <div class="md:w-[420px] md:absolute md:left-0 md:top-1/2 md:transform md:-translate-y-1/2 bg-white text-white p-8 md:rounded-xl md:shadow-[0_6px_20px_0_rgba(0,0,0,0.2)] flex flex-col text-start z-[10]">
-            <h2 class="text-3xl font-bold text-gray-800">Cari Rumah Kontrakan?</h2>
-            <p class="mt-4 text-md text-gray-600">Temukan sewa atau kontrak jangka panjang seperti rumah sendiri untuk menetap selama sebulan atau lebih.</p>
-          </div>
-
-          <!-- Gambar (80%) -->
-          <div class="carousel flex items-center justify-center rounded-xl overflow-hidden h-fit w-full md:w-4/5">
-            <div><img src="asset/hero_image.png" alt="Contoh Gambar" class="w-full max-h-[80vh] md:h-full object-cover" /></div>
-            <div><img src="asset/hero_image2.png" alt="Contoh Gambar" class="w-full max-h-[80vh] md:h-full object-cover" /></div>
-            <div><img src="asset/hero_image3.png" alt="Contoh Gambar" class="w-full max-h-[80vh] md:h-full object-cover" /></div>
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="mx-auto px-2 md:px-8 mb-24 h-full w-full flex flex-col">
-          <h1 class="text-xl md:text-2xl font-bold mb-6">Kontrakan Sekitar Kampus</h1>
-          <div id="grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-        </div>
-      </section>
-
-      <section>
-        <div class="mx-auto px-2 md:px-8 mb-24 h-full w-full flex flex-col">
-          <h3 class="text-xl md:text-2xl font-bold mb-6">Proses Transaksi</h3>
-          <div class="grid grid-cols-1 gap-6 items-center justify-center">
-            <!-- Step 1 -->
-            <div class="w-full h-full p-4 py-6 flex flex-row gap-2 items-start justify-between bg-white rounded-xl shadow-md border border-solid border-gray-200 overflow-hidden cursor-pointer transition">
-              <div class="w-4/5 flex flex-col">
-                <h3 class="text-xl text-gray-800 font-bold">#1 Pilih Rumah</h3>
-                <p class="text-md text-gray-600">Pilih rumah yang Anda inginkan pada peta di bawah.</p>
-              </div>
-              <div class="flex w-1/5 justify-end">
-                <svg class="h-12 stroke-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="4" cy="4" r="1" transform="rotate(90 4 4)" stroke-width="2" />
-                  <circle cx="12" cy="4" r="1" transform="rotate(90 12 4)" stroke-width="2" />
-                  <circle cx="20" cy="4" r="1" transform="rotate(90 20 4)" stroke-width="2" />
-                  <circle cx="4" cy="12" r="1" transform="rotate(90 4 12)" stroke-width="2" />
-                  <circle cx="12" cy="12" r="1" transform="rotate(90 12 12)" stroke-width="2" />
-                  <circle cx="20" cy="12" r="1" transform="rotate(90 20 12)" stroke-width="2" />
-                  <circle cx="4" cy="20" r="1" transform="rotate(90 4 20)" stroke-width="2" />
-                  <circle cx="12" cy="20" r="1" transform="rotate(90 12 20)" stroke-width="2" />
-                  <circle cx="20" cy="20" r="1" transform="rotate(90 20 20)" stroke-width="2" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div class="w-full h-full p-4 py-6 flex flex-row gap-2 items-start justify-between bg-white rounded-xl shadow-md border border-solid border-gray-200 overflow-hidden cursor-pointer transition">
-              <div class="w-4/5 flex flex-col">
-                <h3 class="text-xl text-gray-800 font-bold">#2 Hubungi Kami</h3>
-                <p class="text-md text-gray-600">Hubungi kami untuk mengatur jadwal survei.</p>
-              </div>
-              <div class="flex w-1/5 justify-end">
-                <svg class="h-12 stroke-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="4" cy="4" r="1" transform="rotate(90 4 4)" stroke-width="2" />
-                  <circle cx="12" cy="4" r="1" transform="rotate(90 12 4)" stroke-width="2" />
-                  <circle cx="20" cy="4" r="1" transform="rotate(90 20 4)" stroke-width="2" />
-                  <circle cx="4" cy="12" r="1" transform="rotate(90 4 12)" stroke-width="2" />
-                  <circle cx="12" cy="12" r="1" transform="rotate(90 12 12)" stroke-width="2" />
-                  <circle cx="20" cy="12" r="1" transform="rotate(90 20 12)" stroke-width="2" />
-                  <circle cx="4" cy="20" r="1" transform="rotate(90 4 20)" stroke-width="2" />
-                  <circle cx="12" cy="20" r="1" transform="rotate(90 12 20)" stroke-width="2" />
-                  <circle cx="20" cy="20" r="1" transform="rotate(90 20 20)" stroke-width="2" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="w-full h-full p-4 py-6 flex flex-row gap-2 items-start justify-between bg-white rounded-xl shadow-md border border-solid border-gray-200 overflow-hidden cursor-pointer transition">
-              <div class="w-4/5 flex flex-col">
-                <h3 class="text-xl text-gray-800 font-bold">#3 Survei Rumah</h3>
-                <p class="text-md text-gray-600">Lakukan survei langsung ke rumah pilihan Anda.</p>
-              </div>
-              <div class="flex w-1/5 justify-end">
-                <svg class="h-12 stroke-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="4" cy="4" r="1" transform="rotate(90 4 4)" stroke-width="2" />
-                  <circle cx="12" cy="4" r="1" transform="rotate(90 12 4)" stroke-width="2" />
-                  <circle cx="20" cy="4" r="1" transform="rotate(90 20 4)" stroke-width="2" />
-                  <circle cx="4" cy="12" r="1" transform="rotate(90 4 12)" stroke-width="2" />
-                  <circle cx="12" cy="12" r="1" transform="rotate(90 12 12)" stroke-width="2" />
-                  <circle cx="20" cy="12" r="1" transform="rotate(90 20 12)" stroke-width="2" />
-                  <circle cx="4" cy="20" r="1" transform="rotate(90 4 20)" stroke-width="2" />
-                  <circle cx="12" cy="20" r="1" transform="rotate(90 12 20)" stroke-width="2" />
-                  <circle cx="20" cy="20" r="1" transform="rotate(90 20 20)" stroke-width="2" />
-                </svg>
-              </div>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="w-full h-full p-4 py-6 flex flex-row gap-2 items-start justify-between bg-white rounded-xl shadow-md border border-solid border-gray-200 overflow-hidden cursor-pointer transition">
-              <div class="w-4/5 flex flex-col">
-                <h3 class="text-xl text-gray-800 font-bold">#4 Pembayaran</h3>
-                <p class="text-md text-gray-600">Lakukan pembayaran sesuai kesepakatan.</p>
-              </div>
-              <div class="flex w-1/5 justify-end">
-                <svg class="h-12 stroke-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="4" cy="4" r="1" transform="rotate(90 4 4)" stroke-width="2" />
-                  <circle cx="12" cy="4" r="1" transform="rotate(90 12 4)" stroke-width="2" />
-                  <circle cx="20" cy="4" r="1" transform="rotate(90 20 4)" stroke-width="2" />
-                  <circle cx="4" cy="12" r="1" transform="rotate(90 4 12)" stroke-width="2" />
-                  <circle cx="12" cy="12" r="1" transform="rotate(90 12 12)" stroke-width="2" />
-                  <circle cx="20" cy="12" r="1" transform="rotate(90 20 12)" stroke-width="2" />
-                  <circle cx="4" cy="20" r="1" transform="rotate(90 4 20)" stroke-width="2" />
-                  <circle cx="12" cy="20" r="1" transform="rotate(90 12 20)" stroke-width="2" />
-                  <circle cx="20" cy="20" r="1" transform="rotate(90 20 20)" stroke-width="2" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <div class="mx-auto px-2 md:px-8 my-8">
-        <section id="map-section" class="my-12 mb-24">
-          <h3 class="text-xl md:text-2xl font-bold mb-6">Lokasi Kontrakan</h3>
-
-          <div class="relative flex flex-col md:h-fit">
-            <!-- map (80%) -->
-            <div class="flex flex-col justify-center overflow-hidden w-full">
-              <div class="bg-yellow-200 p-2 pt-3 flex flex-col gap-2 rounded-t-xl">
-                <select id="region" class="py-3 px-4 block w-full bg-gray-200 border-2 border-solid border-gray-300 rounded-t-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                  <option value="" disabled selected></option>
-                </select>
-                <div class="w-full flex flex-row gap-2">
-                  <input type="text" id="kode_rumah" name="kode_rumah" class="w-4/5 border border-1 border-gray-400 rounded-[4px] px-2 focus:outline-none" placeholder="Pencarian kode rumah (No. 85/100/102)" />
-                  <button class="w-1/5 bg-yellow-400 rounded-[4px] p-2" onclick="searchMarker()">Cari</button>
-                </div>
-              </div>
-              <div id="map" class=""></div>
-            </div>
-            <!-- Box Text (20%) -->
-            <div class="bg-yellow-200 rounded-b-xl p-2 gap-2 md:gap-0 text-white flex flex-col">
-              <p class="blink1 text-md tracking-wide text-red-700">*Lokasi rumah tidak akurat sesuai posisi di peta untuk menghindari penipuan!</p>
-              <p class="blink1 text-md tracking-wide text-red-700">*Hubungi kontak kami di bawah jika butuh informasi atau bantuan.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <section>
-        <div class="mx-auto px-2 md:px-8 mb-24 h-full w-full flex flex-col">
-          <h3 class="text-xl md:text-2xl font-bold mb-6">Update Terbaru</h3>
-          <div id="news-container" class="grid grid-cols-1 md:grid-cols-1 gap-6"></div>
-        </div>
-      </section>
-
-      <section id="contact" class="mt-12 text-center w-full">
-        <div class="flex flex-col gap-6">
-          <div class="flex flex-row gap-2 items-center justify-center">
-            <svg class="w-8 stroke-red-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path opacity="0.5" d="M2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495C22.2051 9.00229 22.0154 10.3208 21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579Z" stroke-width="1.5" />
-              <path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16" stroke-width="1.5" stroke-linecap="round" />
-            </svg>
-            <h1 class="text-2xl font-bold text-red-500">KontrakYuk</h1>
-          </div>
-
-          <h3>Butuh batuan atau masih bingung cari kontrakan? hubungi kami ya..!!</h3>
-
-          <div class="flex flex-col gap-2">
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <svg class="h-5 fill-gray-800" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.42 9.49c-.19-.09-1.1-.54-1.27-.61s-.29-.09-.42.1-.48.6-.59.73-.21.14-.4 0a5.13 5.13 0 0 1-1.49-.92 5.25 5.25 0 0 1-1-1.29c-.11-.18 0-.28.08-.38s.18-.21.28-.32a1.39 1.39 0 0 0 .18-.31.38.38 0 0 0 0-.33c0-.09-.42-1-.58-1.37s-.3-.32-.41-.32h-.4a.72.72 0 0 0-.5.23 2.1 2.1 0 0 0-.65 1.55A3.59 3.59 0 0 0 5 8.2 8.32 8.32 0 0 0 8.19 11c.44.19.78.3 1.05.39a2.53 2.53 0 0 0 1.17.07 1.93 1.93 0 0 0 1.26-.88 1.67 1.67 0 0 0 .11-.88c-.05-.07-.17-.12-.36-.21z" />
-                <path d="M13.29 2.68A7.36 7.36 0 0 0 8 .5a7.44 7.44 0 0 0-6.41 11.15l-1 3.85 3.94-1a7.4 7.4 0 0 0 3.55.9H8a7.44 7.44 0 0 0 5.29-12.72zM8 14.12a6.12 6.12 0 0 1-3.15-.87l-.22-.13-2.34.61.62-2.28-.14-.23a6.18 6.18 0 0 1 9.6-7.65 6.12 6.12 0 0 1 1.81 4.37A6.19 6.19 0 0 1 8 14.12z" />
-              </svg>
-
-              <a class="text-md text-gray-800" href="https://wa.me/6282231320160?text=permisi,%20saya%20butuh%20bantuan%20tim%20kontrakyuk" target="_blank">+62 822-3132-0160 (Whatsapp)</a>
-            </div>
-
-            <div class="flex flex-row gap-2 items-center justify-center">
-              <svg class="h-5 fill-gray-800" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M23.1117 4.49449C23.4296 2.94472 21.9074 1.65683 20.4317 2.227L2.3425 9.21601C0.694517 9.85273 0.621087 12.1572 2.22518 12.8975L6.1645 14.7157L8.03849 21.2746C8.13583 21.6153 8.40618 21.8791 8.74917 21.968C9.09216 22.0568 9.45658 21.9576 9.70712 21.707L12.5938 18.8203L16.6375 21.8531C17.8113 22.7334 19.5019 22.0922 19.7967 20.6549L23.1117 4.49449ZM3.0633 11.0816L21.1525 4.0926L17.8375 20.2531L13.1 16.6999C12.7019 16.4013 12.1448 16.4409 11.7929 16.7928L10.5565 18.0292L10.928 15.9861L18.2071 8.70703C18.5614 8.35278 18.5988 7.79106 18.2947 7.39293C17.9906 6.99479 17.4389 6.88312 17.0039 7.13168L6.95124 12.876L3.0633 11.0816ZM8.17695 14.4791L8.78333 16.6015L9.01614 15.321C9.05253 15.1209 9.14908 14.9366 9.29291 14.7928L11.5128 12.573L8.17695 14.4791Z" />
-              </svg>
-
-              <a class="text-md text-gray-800" href="https://t.me/kontrakyuk?text=permisi,%20saya%20butuh%20bantuan%20tim%20kontrakyuk" target="_blank">kontrakyuk (Telegram)</a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="bg-white shadow-md py-6 mt-10">
-      <div class="container mx-auto text-center">
-        <p class="text-gray-600 text-sm">© 2025 Kontrak Yuk. All rights reserved.</p>
-      </div>
-    </footer>
-
-    <script src="asset/cryptojs/crypto-js.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-
-    <script src="asset/jquery-3.7.1.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script type="text/javascript" src="asset/slick/slick.min.js"></script>
-
-    <script type="text/javascript" src="asset/leaflet fullscreen/Control.FullScreen.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <script>
-      const _0x1c02c5 = _0xc316;
-      (function (_0x559a15, _0x2e02b6) {
-        const _0x18771b = { _0x1b6cdd: 0x1c8, _0x51ed8c: "JXZ(", _0x4a0eac: 0x223, _0x42a664: "GDr6", _0x4d91f3: "gOI0", _0x524f60: 0x1b8, _0x3e9279: "%(Ne", _0x3e3c03: 0x18e, _0x380688: "roOD", _0x8a9ba4: 0x1fd },
-          _0x339126 = _0xc316,
-          _0x3baff1 = _0x559a15();
+<!doctypehtml><html lang=id><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><meta content="Temukan rumah kontrakan"name=description><meta content="sewa kontrakan rumah, ruko, gedung, apartemen"name=keywords><meta content="kontrak yuk"name=author><title>Sewa Kontrakan - Kontrak Yuk</title><link href=https://unpkg.com/leaflet@1.9.4/dist/leaflet.css rel=stylesheet><link href=https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css rel=stylesheet><link href=https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css rel=stylesheet><link href=asset/slick/slick.css rel=stylesheet><link href=asset/slick/slick-theme.css rel=stylesheet><link href=asset/tailwind.css rel=stylesheet><link href="asset/leaflet fullscreen/Control.FullScreen.css"rel=stylesheet><link href=https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css rel=stylesheet><style>#map{height:90vh;width:100%}.swal2-backdrop-show{z-index:100000}.blink{animation:blink-animation 5s infinite}@keyframes blink-animation{0%,100%,20%,80%{color:#b91c1c}50%{color:#161616}}.select2-selection{-webkit-box-shadow:0;box-shadow:0;background-color:#fff;border:0;border-radius:0;color:#555;outline:0;min-height:38px;text-align:left}.select2-selection__rendered{margin:5px}.select2-selection__arrow{margin:5px}</style><body class="text-gray-800 bg-white"><div class="flex flex-col bottom-5 fixed items-center right-5 z-[1100]"><div class="hidden mb-2 space-y-2"id=contact-options><div class="relative group"><span class="text-white -left-24 absolute bg-gray-800 duration-200 group-hover:opacity-100 opacity-0 px-2 py-1 rounded-md text-sm top-[20%] transition-opacity">WhatsApp</span> <a class="flex items-center bg-white border border-1 rounded-full border-gray-300 px-4 py-4 shadow-md"href=https://wa.me/6282231320160 target=_blank><svg class="fill-gray-800 w-6"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M6.014 8.00613C6.12827 7.1024 7.30277 5.87414 8.23488 6.01043L8.23339 6.00894C9.14051 6.18132 9.85859 7.74261 10.2635 8.44465C10.5504 8.95402 10.3641 9.4701 10.0965 9.68787C9.7355 9.97883 9.17099 10.3803 9.28943 10.7834C9.5 11.5 12 14 13.2296 14.7107C13.695 14.9797 14.0325 14.2702 14.3207 13.9067C14.5301 13.6271 15.0466 13.46 15.5548 13.736C16.3138 14.178 17.0288 14.6917 17.69 15.27C18.0202 15.546 18.0977 15.9539 17.8689 16.385C17.4659 17.1443 16.3003 18.1456 15.4542 17.9421C13.9764 17.5868 8 15.27 6.08033 8.55801C5.97237 8.24048 5.99955 8.12044 6.014 8.00613Z"/><path d="M12 23C10.7764 23 10.0994 22.8687 9 22.5L6.89443 23.5528C5.56462 24.2177 4 23.2507 4 21.7639V19.5C1.84655 17.492 1 15.1767 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23ZM6 18.6303L5.36395 18.0372C3.69087 16.4772 3 14.7331 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C11.0143 21 10.552 20.911 9.63595 20.6038L8.84847 20.3397L6 21.7639V18.6303Z"clip-rule=evenodd fill-rule=evenodd /></svg></a></div><div class="relative group"><span class="text-white -left-24 absolute bg-gray-800 duration-200 group-hover:opacity-100 opacity-0 px-2 py-1 rounded-md text-sm top-[20%] transition-opacity">Telegram</span> <a class="flex items-center bg-white border border-1 rounded-full border-gray-300 px-4 py-4 shadow-md"href=https://t.me/kontrakyuk target=_blank><svg class="fill-gray-800 w-6"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M23.1117 4.49449C23.4296 2.94472 21.9074 1.65683 20.4317 2.227L2.3425 9.21601C0.694517 9.85273 0.621087 12.1572 2.22518 12.8975L6.1645 14.7157L8.03849 21.2746C8.13583 21.6153 8.40618 21.8791 8.74917 21.968C9.09216 22.0568 9.45658 21.9576 9.70712 21.707L12.5938 18.8203L16.6375 21.8531C17.8113 22.7334 19.5019 22.0922 19.7967 20.6549L23.1117 4.49449ZM3.0633 11.0816L21.1525 4.0926L17.8375 20.2531L13.1 16.6999C12.7019 16.4013 12.1448 16.4409 11.7929 16.7928L10.5565 18.0292L10.928 15.9861L18.2071 8.70703C18.5614 8.35278 18.5988 7.79106 18.2947 7.39293C17.9906 6.99479 17.4389 6.88312 17.0039 7.13168L6.95124 12.876L3.0633 11.0816ZM8.17695 14.4791L8.78333 16.6015L9.01614 15.321C9.05253 15.1209 9.14908 14.9366 9.29291 14.7928L11.5128 12.573L8.17695 14.4791Z"clip-rule=evenodd fill-rule=evenodd /></svg></a></div><div class="relative group"><span class="text-white -left-24 absolute bg-gray-800 duration-200 group-hover:opacity-100 opacity-0 px-2 py-1 rounded-md text-sm top-[20%] transition-opacity">Facebook</span> <a class="flex items-center bg-white border border-1 rounded-full border-gray-300 px-4 py-4 shadow-md"href=https://facebook.com/sofiul.ruslan target=_blank><svg class="fill-gray-800 w-6"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M17.3 9.6C17.6314 9.15817 17.5418 8.53137 17.1 8.2C16.6582 7.86863 16.0314 7.95817 15.7 8.4L13.3918 11.4776L11.2071 9.29289C11.0021 9.08791 10.7183 8.98197 10.4291 9.00252C10.1399 9.02307 9.87393 9.16809 9.7 9.4L6.7 13.4C6.36863 13.8418 6.45817 14.4686 6.9 14.8C7.34183 15.1314 7.96863 15.0418 8.3 14.6L10.6082 11.5224L12.7929 13.7071C12.9979 13.9121 13.2817 14.018 13.5709 13.9975C13.8601 13.9769 14.1261 13.8319 14.3 13.6L17.3 9.6Z"/><path d="M12 23C10.7764 23 10.0994 22.8687 9 22.5L6.89443 23.5528C5.56462 24.2177 4 23.2507 4 21.7639V19.5C1.84655 17.492 1 15.1767 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23ZM6 18.6303L5.36395 18.0372C3.69087 16.4772 3 14.7331 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C11.0143 21 10.552 20.911 9.63595 20.6038L8.84847 20.3397L6 21.7639V18.6303Z"clip-rule=evenodd fill-rule=evenodd /></svg></a></div></div><button class="flex items-center justify-center bg-white border border-1 border-red-300 focus:outline-none h-16 relative rounded-full shadow-lg text-white w-16"id=contact-button><svg class="w-8 fill-red-500"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M10.8693 21.5102L11.5147 21.8922L10.8693 21.5102ZM11.1288 21.0719L10.4833 20.6899L11.1288 21.0719ZM8.87121 21.0719L9.51663 20.6899L9.51662 20.6899L8.87121 21.0719ZM9.13064 21.5102L8.48523 21.8922L9.13064 21.5102ZM2.30448 17.1308L2.99739 16.8438H2.99739L2.30448 17.1308ZM6.28931 19.585L6.31328 18.8354L6.28931 19.585ZM4.46927 19.2956L4.18225 19.9885H4.18225L4.46927 19.2956ZM17.6955 17.1308L18.3884 17.4178L18.3884 17.4178L17.6955 17.1308ZM13.7107 19.585L13.6867 18.8354L13.7107 19.585ZM15.5307 19.2956L15.8177 19.9885L15.5307 19.2956ZM16.09 6.58944L16.4819 5.94996V5.94996L16.09 6.58944ZM17.4106 7.91001L18.05 7.51814V7.51814L17.4106 7.91001ZM3.91001 6.58944L3.51813 5.94996V5.94996L3.91001 6.58944ZM2.58944 7.91001L1.94996 7.51814H1.94996L2.58944 7.91001ZM7.91637 19.8223L7.53453 20.4679H7.53453L7.91637 19.8223ZM11.5147 21.8922L11.7742 21.4539L10.4833 20.6899L10.2239 21.1282L11.5147 21.8922ZM8.22579 21.4539L8.48523 21.8922L9.77606 21.1282L9.51663 20.6899L8.22579 21.4539ZM10.2239 21.1282C10.1785 21.2049 10.0992 21.25 9.99998 21.25C9.90074 21.25 9.82147 21.2049 9.77606 21.1282L8.48523 21.8922C9.16217 23.0359 10.8378 23.0359 11.5147 21.8922L10.2239 21.1282ZM8.8 6.75H11.2V5.25H8.8V6.75ZM17.25 12.8V13.6H18.75V12.8H17.25ZM2.75 13.6V12.8H1.25V13.6H2.75ZM1.25 13.6C1.25 14.5217 1.24959 15.2504 1.2898 15.8397C1.33047 16.4357 1.41517 16.9436 1.61157 17.4178L2.99739 16.8438C2.88931 16.5828 2.82178 16.2573 2.78632 15.7376C2.75041 15.2112 2.75 14.5422 2.75 13.6H1.25ZM6.31328 18.8354C5.52102 18.81 5.09046 18.7411 4.75628 18.6027L4.18225 19.9885C4.77912 20.2357 5.43744 20.3081 6.26533 20.3346L6.31328 18.8354ZM1.61157 17.4178C2.09367 18.5817 3.01837 19.5064 4.18225 19.9885L4.75628 18.6027C3.95994 18.2728 3.32725 17.6401 2.99739 16.8438L1.61157 17.4178ZM17.25 13.6C17.25 14.5422 17.2496 15.2112 17.2137 15.7376C17.1782 16.2573 17.1107 16.5828 17.0026 16.8438L18.3884 17.4178C18.5848 16.9436 18.6695 16.4357 18.7102 15.8397C18.7504 15.2504 18.75 14.5217 18.75 13.6H17.25ZM13.7346 20.3346C14.5625 20.3081 15.2209 20.2357 15.8177 19.9885L15.2437 18.6027C14.9095 18.7411 14.479 18.81 13.6867 18.8354L13.7346 20.3346ZM17.0026 16.8438C16.6728 17.6401 16.0401 18.2728 15.2437 18.6027L15.8177 19.9885C16.9816 19.5064 17.9063 18.5817 18.3884 17.4178L17.0026 16.8438ZM11.2 6.75C12.5239 6.75 13.4641 6.75079 14.1953 6.82031C14.9154 6.88877 15.3548 7.01855 15.6981 7.22892L16.4819 5.94996C15.8633 5.57089 15.1671 5.40595 14.3373 5.32705C13.5187 5.24921 12.4949 5.25 11.2 5.25V6.75ZM18.75 12.8C18.75 11.5052 18.7508 10.4814 18.673 9.6627C18.5941 8.83288 18.4291 8.13673 18.05 7.51814L16.7711 8.30189C16.9814 8.64518 17.1112 9.08466 17.1797 9.80468C17.2492 10.5359 17.25 11.4761 17.25 12.8H18.75ZM15.6981 7.22892C16.1354 7.4969 16.5031 7.86458 16.7711 8.30189L18.05 7.51814C17.6584 6.879 17.121 6.34163 16.4819 5.94996L15.6981 7.22892ZM8.8 5.25C7.50515 5.25 6.48135 5.24921 5.66269 5.32705C4.83287 5.40595 4.13672 5.57089 3.51813 5.94996L4.30188 7.22892C4.64517 7.01855 5.08465 6.88877 5.80467 6.82031C6.53585 6.75079 7.47611 6.75 8.8 6.75V5.25ZM2.75 12.8C2.75 11.4761 2.75079 10.5359 2.82031 9.80468C2.88877 9.08466 3.01855 8.64518 3.22892 8.30189L1.94996 7.51814C1.57089 8.13673 1.40595 8.83288 1.32705 9.6627C1.24921 10.4814 1.25 11.5052 1.25 12.8H2.75ZM3.51813 5.94996C2.87899 6.34163 2.34162 6.879 1.94996 7.51814L3.22892 8.30189C3.4969 7.86458 3.86458 7.4969 4.30188 7.22892L3.51813 5.94996ZM9.51662 20.6899C9.31582 20.3506 9.13969 20.0516 8.96888 19.8164C8.78917 19.569 8.58327 19.3454 8.29822 19.1768L7.53453 20.4679C7.58064 20.4951 7.64427 20.5451 7.75524 20.6979C7.87511 20.863 8.01082 21.0907 8.2258 21.4539L9.51662 20.6899ZM6.26533 20.3346C6.71078 20.3489 6.99552 20.3587 7.21182 20.3851C7.41631 20.41 7.49305 20.4433 7.53453 20.4679L8.29822 19.1768C8.00853 19.0055 7.70371 18.9339 7.39344 18.8961C7.09498 18.8597 6.73177 18.8488 6.31328 18.8354L6.26533 20.3346ZM11.7742 21.4539C11.9891 21.0907 12.1249 20.863 12.2447 20.6979C12.3557 20.5451 12.4193 20.4951 12.4654 20.4679L11.7018 19.1768C11.4167 19.3454 11.2108 19.569 11.0311 19.8164C10.8603 20.0516 10.6841 20.3506 10.4833 20.6899L11.7742 21.4539ZM13.6867 18.8354C13.2682 18.8488 12.905 18.8597 12.6065 18.8961C12.2963 18.9339 11.9914 19.0055 11.7018 19.1768L12.4654 20.4679C12.5069 20.4433 12.5837 20.41 12.7881 20.3851C13.0044 20.3587 13.2892 20.3489 13.7346 20.3346L13.6867 18.8354Z"/><path d="M21.7145 12.4351L22.4074 12.7221V12.7221L21.7145 12.4351ZM19.685 14.4646L19.972 15.1575H19.972L19.685 14.4646ZM20.2093 2.5526L19.8174 3.19208V3.19208L20.2093 2.5526ZM21.4473 3.79064L22.0868 3.39876V3.39876L21.4473 3.79064ZM8.79058 2.5526L8.3987 1.91312V1.91312L8.79058 2.5526ZM7.55255 3.79064L6.91307 3.39876H6.91307L7.55255 3.79064ZM13.3749 2.75H15.6249V1.25H13.3749V2.75ZM21.2499 8.37503V9.12503H22.7499V8.37503H21.2499ZM21.2499 9.12503C21.2499 10.0089 21.2495 10.6343 21.216 11.1258C21.1829 11.6106 21.1201 11.9101 21.0216 12.1481L22.4074 12.7221C22.5943 12.2709 22.6742 11.7891 22.7125 11.2279C22.7504 10.6735 22.7499 9.98841 22.7499 9.12503H21.2499ZM21.0216 12.1481C20.7171 12.8832 20.1331 13.4672 19.398 13.7717L19.972 15.1575C21.0747 14.7008 21.9507 13.8247 22.4074 12.7221L21.0216 12.1481ZM15.6249 2.75C16.867 2.75 17.7459 2.75079 18.4286 2.81571C19.1002 2.87956 19.5042 3.00013 19.8174 3.19208L20.6012 1.91312C20.0127 1.55247 19.352 1.39674 18.5706 1.32244C17.8004 1.24921 16.838 1.25 15.6249 1.25V2.75ZM22.7499 8.37503C22.7499 7.16201 22.7507 6.19958 22.6775 5.42935C22.6032 4.64796 22.4475 3.98729 22.0868 3.39876L20.8079 4.18251C20.9998 4.49574 21.1204 4.89973 21.1842 5.57133C21.2492 6.25408 21.2499 7.13296 21.2499 8.37503H22.7499ZM19.8174 3.19208C20.2211 3.43945 20.5605 3.77884 20.8079 4.18251L22.0868 3.39876C21.7158 2.79326 21.2067 2.28417 20.6012 1.91312L19.8174 3.19208ZM13.3749 1.25C12.1619 1.25 11.1995 1.24921 10.4293 1.32244C9.64789 1.39674 8.98723 1.55247 8.3987 1.91312L9.18245 3.19208C9.49568 3.00013 9.89967 2.87956 10.5713 2.81571C11.254 2.75079 12.1329 2.75 13.3749 2.75V1.25ZM8.3987 1.91312C7.7932 2.28417 7.28412 2.79326 6.91307 3.39876L8.19203 4.18251C8.43939 3.77884 8.77879 3.43945 9.18245 3.19208L8.3987 1.91312ZM7.78219 6.03896C7.83215 5.07858 7.95706 4.56594 8.19203 4.18251L6.91307 3.39876C6.47594 4.11209 6.33747 4.93717 6.28422 5.96104L7.78219 6.03896ZM18.0249 15.4848C18.7916 15.4593 19.4094 15.3906 19.972 15.1575L19.398 13.7717C19.096 13.8968 18.7039 13.9614 17.9751 13.9857L18.0249 15.4848Z"/><path d="M6.50928 13H6.51828M10 13H10.009M13.491 13H13.5"stroke-width=2 stroke-linecap=round class=stroke-red-500 stroke-linejoin=round /></svg> <span class="text-md text-gray-800 -left-52 absolute bg-white border border-1 border-red-300 px-3 py-1 rounded-md"id=contact-bubble-popup-text>Kamu butuh bantuan?</span></button></div><header class="mb-12 bg-white py-6 shadow-md"><div class="flex flex w-full mx-auto mx-auto md:px-8 px-2 gap-4 items-center justify-between"><div class="flex gap-2 flex-row"><svg class="stroke-red-500 w-8"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495C22.2051 9.00229 22.0154 10.3208 21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579Z"stroke-width=1.5 opacity=0.5 /><path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16"stroke-width=1.5 stroke-linecap=round /></svg><h1 class="font-bold text-2xl text-red-500">KontrakYuk</h1></div><div class="flex space-x-8"><a class="text-gray-600 hover:text-gray-400"href="https://wa.me/6282231320160?text=Halo KontrakYuk,%20saya%20ingin%20kerjasama%20dan%20mendaftarkan%20properti%20saya%20di%20kontrakyuk"target=_blank>Daftarkan kontrakan anda</a></div></div></header><main><section class="flex flex-col w-full h-full md:px-8 mx-auto px-2 mb-10 md:mb-24"><div class="flex relative md:h-fit flex-col-reverse gap-4 items-end md:flex-col md:flex-row md:gap-0"><div class="flex flex-col text-white bg-white md:-translate-y-1/2 md:absolute md:left-0 md:rounded-xl md:shadow-[0_6px_20px_0_rgba(0,0,0,0.2)] md:top-1/2 md:transform md:w-[420px] p-8 text-start z-[10]"><h2 class="font-bold text-gray-800 text-3xl">Cari Rumah Kontrakan?</h2><p class="text-md text-gray-600 mt-4">Temukan sewa atau kontrak jangka panjang seperti rumah sendiri untuk menetap selama sebulan atau lebih.</div><div class="flex w-full overflow-hidden rounded-xl carousel h-fit items-center justify-center md:w-4/5"><div><img alt="Contoh Gambar"class="w-full max-h-[80vh] md:h-full object-cover"src=asset/hero_image.png></div><div><img alt="Contoh Gambar"class="w-full max-h-[80vh] md:h-full object-cover"src=asset/hero_image2.png></div><div><img alt="Contoh Gambar"class="w-full max-h-[80vh] md:h-full object-cover"src=asset/hero_image3.png></div></div></div></section><section><div class="flex flex-col w-full h-full md:px-8 mx-auto px-2 mb-24"><h1 class="font-bold text-xl mb-6 md:text-2xl">Kontrakan Sekitar Kampus</h1><div class="grid gap-4 grid-cols-2 md:grid-cols-4"id=grid-container></div></div></section><section><div class="flex flex-col w-full h-full md:px-8 mx-auto px-2 mb-24"><h3 class="font-bold text-xl mb-6 md:text-2xl">Proses Transaksi</h3><div class="gap-6 grid grid-cols-1 items-center justify-center"><div class="flex w-full h-full bg-white border border-gray-200 border-solid cursor-pointer flex-row gap-2 items-start justify-between overflow-hidden p-4 py-6 rounded-xl shadow-md transition"><div class="flex flex-col w-4/5"><h3 class="font-bold text-xl text-gray-800">#1 Pilih Rumah</h3><p class="text-md text-gray-600">Pilih rumah yang Anda inginkan pada peta di bawah.</div><div class="flex justify-end w-1/5"><svg class="h-12 stroke-gray-400"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><circle cx=4 cy=4 r=1 stroke-width=2 transform="rotate(90 4 4)"/><circle cx=12 cy=4 r=1 stroke-width=2 transform="rotate(90 12 4)"/><circle cx=20 cy=4 r=1 stroke-width=2 transform="rotate(90 20 4)"/><circle cx=4 cy=12 r=1 stroke-width=2 transform="rotate(90 4 12)"/><circle cx=12 cy=12 r=1 stroke-width=2 transform="rotate(90 12 12)"/><circle cx=20 cy=12 r=1 stroke-width=2 transform="rotate(90 20 12)"/><circle cx=4 cy=20 r=1 stroke-width=2 transform="rotate(90 4 20)"/><circle cx=12 cy=20 r=1 stroke-width=2 transform="rotate(90 12 20)"/><circle cx=20 cy=20 r=1 stroke-width=2 transform="rotate(90 20 20)"/></svg></div></div><div class="flex w-full h-full bg-white border border-gray-200 border-solid cursor-pointer flex-row gap-2 items-start justify-between overflow-hidden p-4 py-6 rounded-xl shadow-md transition"><div class="flex flex-col w-4/5"><h3 class="font-bold text-xl text-gray-800">#2 Hubungi Kami</h3><p class="text-md text-gray-600">Hubungi kami untuk mengatur jadwal survei.</div><div class="flex justify-end w-1/5"><svg class="h-12 stroke-gray-400"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><circle cx=4 cy=4 r=1 stroke-width=2 transform="rotate(90 4 4)"/><circle cx=12 cy=4 r=1 stroke-width=2 transform="rotate(90 12 4)"/><circle cx=20 cy=4 r=1 stroke-width=2 transform="rotate(90 20 4)"/><circle cx=4 cy=12 r=1 stroke-width=2 transform="rotate(90 4 12)"/><circle cx=12 cy=12 r=1 stroke-width=2 transform="rotate(90 12 12)"/><circle cx=20 cy=12 r=1 stroke-width=2 transform="rotate(90 20 12)"/><circle cx=4 cy=20 r=1 stroke-width=2 transform="rotate(90 4 20)"/><circle cx=12 cy=20 r=1 stroke-width=2 transform="rotate(90 12 20)"/><circle cx=20 cy=20 r=1 stroke-width=2 transform="rotate(90 20 20)"/></svg></div></div><div class="flex w-full h-full bg-white border border-gray-200 border-solid cursor-pointer flex-row gap-2 items-start justify-between overflow-hidden p-4 py-6 rounded-xl shadow-md transition"><div class="flex flex-col w-4/5"><h3 class="font-bold text-xl text-gray-800">#3 Survei Rumah</h3><p class="text-md text-gray-600">Lakukan survei langsung ke rumah pilihan Anda.</div><div class="flex justify-end w-1/5"><svg class="h-12 stroke-gray-400"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><circle cx=4 cy=4 r=1 stroke-width=2 transform="rotate(90 4 4)"/><circle cx=12 cy=4 r=1 stroke-width=2 transform="rotate(90 12 4)"/><circle cx=20 cy=4 r=1 stroke-width=2 transform="rotate(90 20 4)"/><circle cx=4 cy=12 r=1 stroke-width=2 transform="rotate(90 4 12)"/><circle cx=12 cy=12 r=1 stroke-width=2 transform="rotate(90 12 12)"/><circle cx=20 cy=12 r=1 stroke-width=2 transform="rotate(90 20 12)"/><circle cx=4 cy=20 r=1 stroke-width=2 transform="rotate(90 4 20)"/><circle cx=12 cy=20 r=1 stroke-width=2 transform="rotate(90 12 20)"/><circle cx=20 cy=20 r=1 stroke-width=2 transform="rotate(90 20 20)"/></svg></div></div><div class="flex w-full h-full bg-white border border-gray-200 border-solid cursor-pointer flex-row gap-2 items-start justify-between overflow-hidden p-4 py-6 rounded-xl shadow-md transition"><div class="flex flex-col w-4/5"><h3 class="font-bold text-xl text-gray-800">#4 Pembayaran</h3><p class="text-md text-gray-600">Lakukan pembayaran sesuai kesepakatan.</div><div class="flex justify-end w-1/5"><svg class="h-12 stroke-gray-400"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><circle cx=4 cy=4 r=1 stroke-width=2 transform="rotate(90 4 4)"/><circle cx=12 cy=4 r=1 stroke-width=2 transform="rotate(90 12 4)"/><circle cx=20 cy=4 r=1 stroke-width=2 transform="rotate(90 20 4)"/><circle cx=4 cy=12 r=1 stroke-width=2 transform="rotate(90 4 12)"/><circle cx=12 cy=12 r=1 stroke-width=2 transform="rotate(90 12 12)"/><circle cx=20 cy=12 r=1 stroke-width=2 transform="rotate(90 20 12)"/><circle cx=4 cy=20 r=1 stroke-width=2 transform="rotate(90 4 20)"/><circle cx=12 cy=20 r=1 stroke-width=2 transform="rotate(90 12 20)"/><circle cx=20 cy=20 r=1 stroke-width=2 transform="rotate(90 20 20)"/></svg></div></div></div></div></section><div class="my-8 md:px-8 mx-auto px-2"><section class="my-12 mb-24"id=map-section><h3 class="font-bold text-xl mb-6 md:text-2xl">Lokasi Kontrakan</h3><div class="flex flex-col md:h-fit relative"><div class="flex flex-col w-full justify-center overflow-hidden"><div class="flex flex-col gap-2 bg-yellow-200 p-2 pt-3 rounded-t-xl"><select class="w-full bg-gray-200 block border-2 border-gray-300 border-solid focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 rounded-t-xl shadow-sm sm:text-sm"id=region><option disabled selected value=""></select><div class="flex w-full flex-row gap-2"><input class="w-4/5 border border-1 border-gray-400 focus:outline-none px-2 rounded-[4px]"id=kode_rumah name=kode_rumah placeholder="Pencarian kode rumah (No. 85/100/102)"> <button class="w-1/5 bg-yellow-400 p-2 rounded-[4px]"onclick=searchMarker()>Cari</button></div></div><div id=map></div></div><div class="flex flex-col gap-2 bg-yellow-200 p-2 md:gap-0 rounded-b-xl text-white"><p class="text-md blink1 text-red-700 tracking-wide">*Lokasi rumah tidak akurat sesuai posisi di peta untuk menghindari penipuan!<p class="text-md blink1 text-red-700 tracking-wide">*Hubungi kontak kami di bawah jika butuh informasi atau bantuan.</div></div></section></div><section><div class="flex flex-col w-full h-full md:px-8 mx-auto px-2 mb-24"><h3 class="font-bold text-xl mb-6 md:text-2xl">Update Terbaru</h3><div class="gap-6 grid grid-cols-1 md:grid-cols-1"id=news-container></div></div></section><section class="w-full mt-12 text-center"id=contact><div class="flex flex-col gap-6"><div class="flex gap-2 flex-row items-center justify-center"><svg class="stroke-red-500 w-8"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M2.36407 12.9579C1.98463 10.3208 1.79491 9.00229 2.33537 7.87495C2.87583 6.7476 4.02619 6.06234 6.32691 4.69181L7.71175 3.86687C9.80104 2.62229 10.8457 2 12 2C13.1543 2 14.199 2.62229 16.2882 3.86687L17.6731 4.69181C19.9738 6.06234 21.1242 6.7476 21.6646 7.87495C22.2051 9.00229 22.0154 10.3208 21.6359 12.9579L21.3572 14.8952C20.8697 18.2827 20.626 19.9764 19.451 20.9882C18.2759 22 16.5526 22 13.1061 22H10.8939C7.44737 22 5.72409 22 4.54903 20.9882C3.37396 19.9764 3.13025 18.2827 2.64284 14.8952L2.36407 12.9579Z"stroke-width=1.5 opacity=0.5 /><path d="M9 16C9.85038 16.6303 10.8846 17 12 17C13.1154 17 14.1496 16.6303 15 16"stroke-width=1.5 stroke-linecap=round /></svg><h1 class="font-bold text-2xl text-red-500">KontrakYuk</h1></div><h3>Butuh batuan atau masih bingung cari kontrakan? hubungi kami ya..!!</h3><div class="flex flex-col gap-2"><div class="flex gap-2 flex-row items-center justify-center"><svg class="fill-gray-800 h-5"viewBox="0 0 16 16"xmlns=http://www.w3.org/2000/svg><path d="M11.42 9.49c-.19-.09-1.1-.54-1.27-.61s-.29-.09-.42.1-.48.6-.59.73-.21.14-.4 0a5.13 5.13 0 0 1-1.49-.92 5.25 5.25 0 0 1-1-1.29c-.11-.18 0-.28.08-.38s.18-.21.28-.32a1.39 1.39 0 0 0 .18-.31.38.38 0 0 0 0-.33c0-.09-.42-1-.58-1.37s-.3-.32-.41-.32h-.4a.72.72 0 0 0-.5.23 2.1 2.1 0 0 0-.65 1.55A3.59 3.59 0 0 0 5 8.2 8.32 8.32 0 0 0 8.19 11c.44.19.78.3 1.05.39a2.53 2.53 0 0 0 1.17.07 1.93 1.93 0 0 0 1.26-.88 1.67 1.67 0 0 0 .11-.88c-.05-.07-.17-.12-.36-.21z"/><path d="M13.29 2.68A7.36 7.36 0 0 0 8 .5a7.44 7.44 0 0 0-6.41 11.15l-1 3.85 3.94-1a7.4 7.4 0 0 0 3.55.9H8a7.44 7.44 0 0 0 5.29-12.72zM8 14.12a6.12 6.12 0 0 1-3.15-.87l-.22-.13-2.34.61.62-2.28-.14-.23a6.18 6.18 0 0 1 9.6-7.65 6.12 6.12 0 0 1 1.81 4.37A6.19 6.19 0 0 1 8 14.12z"/></svg> <a class="text-md text-gray-800"href="https://wa.me/6282231320160?text=permisi,%20saya%20butuh%20bantuan%20tim%20kontrakyuk"target=_blank>+62 822-3132-0160 (Whatsapp)</a></div><div class="flex gap-2 flex-row items-center justify-center"><svg class="fill-gray-800 h-5"viewBox="0 0 24 24"xmlns=http://www.w3.org/2000/svg fill=none><path d="M23.1117 4.49449C23.4296 2.94472 21.9074 1.65683 20.4317 2.227L2.3425 9.21601C0.694517 9.85273 0.621087 12.1572 2.22518 12.8975L6.1645 14.7157L8.03849 21.2746C8.13583 21.6153 8.40618 21.8791 8.74917 21.968C9.09216 22.0568 9.45658 21.9576 9.70712 21.707L12.5938 18.8203L16.6375 21.8531C17.8113 22.7334 19.5019 22.0922 19.7967 20.6549L23.1117 4.49449ZM3.0633 11.0816L21.1525 4.0926L17.8375 20.2531L13.1 16.6999C12.7019 16.4013 12.1448 16.4409 11.7929 16.7928L10.5565 18.0292L10.928 15.9861L18.2071 8.70703C18.5614 8.35278 18.5988 7.79106 18.2947 7.39293C17.9906 6.99479 17.4389 6.88312 17.0039 7.13168L6.95124 12.876L3.0633 11.0816ZM8.17695 14.4791L8.78333 16.6015L9.01614 15.321C9.05253 15.1209 9.14908 14.9366 9.29291 14.7928L11.5128 12.573L8.17695 14.4791Z"clip-rule=evenodd fill-rule=evenodd /></svg> <a class="text-md text-gray-800"href="https://t.me/kontrakyuk?text=permisi,%20saya%20butuh%20bantuan%20tim%20kontrakyuk"target=_blank>kontrakyuk (Telegram)</a></div></div></div></section></main><footer class="mt-10 bg-white py-6 shadow-md"><div class="text-center container mx-auto"><p class="text-gray-600 text-sm">© 2025 Kontrak Yuk. All rights reserved.</div></footer><script src=asset/cryptojs/crypto-js.min.js></script><script src=https://cdn.jsdelivr.net/npm/sweetalert2@11></script><script src=https://unpkg.com/leaflet@1.9.4/dist/leaflet.js></script><script src=https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js></script><script src=asset/jquery-3.7.1.min.js></script><script src=https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js></script><script src=asset/slick/slick.min.js></script><script src="asset/leaflet fullscreen/Control.FullScreen.js"></script><script src=https://cdn.jsdelivr.net/npm/marked/marked.min.js></script><script>const _0x20d6eb = _0x4261;
+      (function (_0x188717, _0x2fe28b) {
+        const _0x5c57e2 = { _0x430f0c: 0x1bd, _0x38ac32: "n&JH", _0x4ae81c: 0x166, _0x53f82f: 0x20a, _0xb6e346: "TKWw", _0x4b3eb2: 0x1a9, _0x2ef74a: "F)%2", _0x394fed: 0x200, _0x83ba62: "MYry", _0x5c6d4a: "MYry" },
+          _0x8edb79 = _0x4261,
+          _0x346901 = _0x188717();
         while (!![]) {
           try {
-            const _0x53d706 = parseInt(_0x339126(_0x18771b._0x1b6cdd, _0x18771b._0x51ed8c)) / 0x1 + -parseInt(_0x339126(0x206, "tENP")) / 0x2 + parseInt(_0x339126(_0x18771b._0x4a0eac, _0x18771b._0x42a664)) / 0x3 + parseInt(_0x339126(0x163, _0x18771b._0x4d91f3)) / 0x4 + -parseInt(_0x339126(_0x18771b._0x524f60, "FMCt")) / 0x5 + (-parseInt(_0x339126(0x237, _0x18771b._0x3e9279)) / 0x6) * (-parseInt(_0x339126(_0x18771b._0x3e3c03, _0x18771b._0x380688)) / 0x7) + (-parseInt(_0x339126(0x24a, "B1pB")) / 0x8) * (parseInt(_0x339126(_0x18771b._0x8a9ba4, "r&d[")) / 0x9);
-            if (_0x53d706 === _0x2e02b6) break;
-            else _0x3baff1["push"](_0x3baff1["shift"]());
-          } catch (_0x2e94b9) {
-            _0x3baff1["push"](_0x3baff1["shift"]());
+            const _0x44651f = parseInt(_0x8edb79(_0x5c57e2._0x430f0c, "iFxm")) / 0x1 + -parseInt(_0x8edb79(0x1d7, _0x5c57e2._0x38ac32)) / 0x2 + (-parseInt(_0x8edb79(_0x5c57e2._0x4ae81c, "v2zV")) / 0x3) * (parseInt(_0x8edb79(_0x5c57e2._0x53f82f, _0x5c57e2._0xb6e346)) / 0x4) + -parseInt(_0x8edb79(_0x5c57e2._0x4b3eb2, _0x5c57e2._0x2ef74a)) / 0x5 + parseInt(_0x8edb79(_0x5c57e2._0x394fed, _0x5c57e2._0x83ba62)) / 0x6 + parseInt(_0x8edb79(0x1b7, "ZtzF")) / 0x7 + (parseInt(_0x8edb79(0x231, _0x5c57e2._0x5c6d4a)) / 0x8) * (parseInt(_0x8edb79(0x189, _0x5c57e2._0xb6e346)) / 0x9);
+            if (_0x44651f === _0x2fe28b) break;
+            else _0x346901["push"](_0x346901["shift"]());
+          } catch (_0x3e913a) {
+            _0x346901["push"](_0x346901["shift"]());
           }
         }
-      })(_0x55ae, 0xaaf14);
-      const _0x42d514 = (function () {
-          let _0x41398a = !![];
-          return function (_0x25eea4, _0x7f8238) {
-            const _0x3f782d = _0x41398a
+      })(_0x45cf, 0xe30e1);
+      const _0x4a4027 = (function () {
+          let _0x31606f = !![];
+          return function (_0xf7f8c9, _0x591e8b) {
+            const _0x78e5c2 = _0x31606f
               ? function () {
-                  if (_0x7f8238) {
-                    const _0x41c277 = _0x7f8238["apply"](_0x25eea4, arguments);
-                    return (_0x7f8238 = null), _0x41c277;
+                  const _0x24bc95 = _0x4261;
+                  if (_0x591e8b) {
+                    const _0x115463 = _0x591e8b[_0x24bc95(0x180, "3(i8")](_0xf7f8c9, arguments);
+                    return (_0x591e8b = null), _0x115463;
                   }
                 }
               : function () {};
-            return (_0x41398a = ![]), _0x3f782d;
+            return (_0x31606f = ![]), _0x78e5c2;
           };
         })(),
-        _0x3f7933 = _0x42d514(this, function () {
-          const _0xd551b7 = { _0x9af99a: 0x19b, _0x13606b: "QypG", _0x2bbc37: 0x196, _0x5777d0: "uuQl", _0x1c7852: 0x22c, _0x37233c: "p@Sy" },
-            _0x9bf7c1 = { _0x15d4ef: "JXZ(", _0x40f12d: "QBVY" },
-            _0x3b7c25 = { _0x4645d7: 0x1c4, _0x55c8dc: "!Q&3" },
-            _0x14f66b = _0xc316,
-            _0x3977d4 = function () {
-              const _0x4db6d8 = _0xc316;
-              let _0x30e50b;
+        _0x39fd97 = _0x4a4027(this, function () {
+          const _0x570b64 = { _0x3d3931: 0x1d6, _0x121bcd: "ebp^", _0x15f33b: "oCdw", _0x44f74f: 0x228, _0x52b0fd: "^#Ro", _0x2b1a5e: 0x1f7, _0x4b39a4: "0]YQ", _0x4b395c: "f$Mf", _0x2c2db2: 0x22d, _0x159762: "!R$7", _0x4b447c: "&n&n" },
+            _0x296b08 = { _0x574aca: 0x172, _0xaf001: "ebp^" },
+            _0x3d8336 = { _0x334147: 0x1ae },
+            _0x365eb8 = _0x4261,
+            _0x1b2a6d = function () {
+              const _0x2a585c = _0x4261;
+              let _0x3d15ae;
               try {
-                _0x30e50b = Function(_0x4db6d8(_0x3b7c25._0x4645d7, _0x3b7c25._0x55c8dc) + "{}.constructor(\x22return\x20this\x22)(\x20)" + ");")();
-              } catch (_0x241b9a) {
-                _0x30e50b = window;
+                _0x3d15ae = Function(_0x2a585c(_0x3d8336._0x334147, "FxoN") + "{}.constructor(\x22return\x20this\x22)(\x20)" + ");")();
+              } catch (_0x3f524a) {
+                _0x3d15ae = window;
               }
-              return _0x30e50b;
+              return _0x3d15ae;
             },
-            _0x57cb6b = _0x3977d4(),
-            _0x26efcc = new RegExp("[zJfOKPszmvSPYpCTZULJsJFEHFQczCqvZlMNEPMQweDNleQxp]", "g"),
-            _0x2424d2 = "kozJnfOtrKakPyszukmvSPY.gitpChuTZbU.LioJsJFEHFQczCqvZlMNEPMQweDNleQxp"["replace"](_0x26efcc, "")[_0x14f66b(_0xd551b7._0x9af99a, "6kBB")](";");
-          let _0xfebf5b, _0x497838, _0x49ee9c, _0x337c79;
-          const _0x5958a6 = function (_0x246b27, _0x434ef4, _0xf2f579) {
-              const _0x293a1b = _0x14f66b;
-              if (_0x246b27[_0x293a1b(0x236, _0x9bf7c1._0x15d4ef)] != _0x434ef4) return ![];
-              for (let _0x447804 = 0x0; _0x447804 < _0x434ef4; _0x447804++) {
-                for (let _0x5a32c0 = 0x0; _0x5a32c0 < _0xf2f579[_0x293a1b(0x232, "TZeH")]; _0x5a32c0 += 0x2) {
-                  if (_0x447804 == _0xf2f579[_0x5a32c0] && _0x246b27[_0x293a1b(0x1a2, _0x9bf7c1._0x40f12d)](_0x447804) != _0xf2f579[_0x5a32c0 + 0x1]) return ![];
+            _0x99f980 = _0x1b2a6d(),
+            _0x3ab523 = new RegExp(_0x365eb8(0x1b5, ")LX7"), "g"),
+            _0x293ab8 = _0x365eb8(_0x570b64._0x3d3931, _0x570b64._0x121bcd)["replace"](_0x3ab523, "")[_0x365eb8(0x18d, _0x570b64._0x15f33b)](";");
+          let _0x312c5e, _0x4f9062, _0x5854ec, _0x3349ca;
+          const _0x51d024 = function (_0x4f8405, _0x27c224, _0x28327c) {
+              const _0x1bf795 = _0x365eb8;
+              if (_0x4f8405[_0x1bf795(0x1df, "ebp^")] != _0x27c224) return ![];
+              for (let _0x494629 = 0x0; _0x494629 < _0x27c224; _0x494629++) {
+                for (let _0x2ad0d2 = 0x0; _0x2ad0d2 < _0x28327c["length"]; _0x2ad0d2 += 0x2) {
+                  if (_0x494629 == _0x28327c[_0x2ad0d2] && _0x4f8405[_0x1bf795(_0x296b08._0x574aca, _0x296b08._0xaf001)](_0x494629) != _0x28327c[_0x2ad0d2 + 0x1]) return ![];
                 }
               }
               return !![];
             },
-            _0x40811e = function (_0x55e36d, _0x33d938, _0x29fd4d) {
-              return _0x5958a6(_0x33d938, _0x29fd4d, _0x55e36d);
+            _0x634ba1 = function (_0x59b47c, _0x1c6393, _0x13980d) {
+              return _0x51d024(_0x1c6393, _0x13980d, _0x59b47c);
             },
-            _0x235f1e = function (_0x51d185, _0x2d59ef, _0x2ed89c) {
-              return _0x40811e(_0x2d59ef, _0x51d185, _0x2ed89c);
+            _0x304ac4 = function (_0x3d2384, _0x32c44e, _0x2a47d4) {
+              return _0x634ba1(_0x32c44e, _0x3d2384, _0x2a47d4);
             },
-            _0x46666 = function (_0x4a3d4f, _0x30b9b2, _0x45705e) {
-              return _0x235f1e(_0x30b9b2, _0x45705e, _0x4a3d4f);
+            _0x21a488 = function (_0x5dbbed, _0x10b0db, _0x144335) {
+              return _0x304ac4(_0x10b0db, _0x144335, _0x5dbbed);
             };
-          for (let _0x2d5126 in _0x57cb6b) {
-            if (_0x5958a6(_0x2d5126, 0x8, [0x7, 0x74, 0x5, 0x65, 0x3, 0x75, 0x0, 0x64])) {
-              _0xfebf5b = _0x2d5126;
+          for (let _0x1eb265 in _0x99f980) {
+            if (_0x51d024(_0x1eb265, 0x8, [0x7, 0x74, 0x5, 0x65, 0x3, 0x75, 0x0, 0x64])) {
+              _0x312c5e = _0x1eb265;
               break;
             }
           }
-          for (let _0x310f30 in _0x57cb6b[_0xfebf5b]) {
-            if (_0x46666(0x6, _0x310f30, [0x5, 0x6e, 0x0, 0x64])) {
-              _0x497838 = _0x310f30;
+          for (let _0x2fd327 in _0x99f980[_0x312c5e]) {
+            if (_0x21a488(0x6, _0x2fd327, [0x5, 0x6e, 0x0, 0x64])) {
+              _0x4f9062 = _0x2fd327;
               break;
             }
           }
-          for (let _0x1cb99e in _0x57cb6b[_0xfebf5b]) {
-            if (_0x235f1e(_0x1cb99e, [0x7, 0x6e, 0x0, 0x6c], 0x8)) {
-              _0x49ee9c = _0x1cb99e;
+          for (let _0x268aef in _0x99f980[_0x312c5e]) {
+            if (_0x304ac4(_0x268aef, [0x7, 0x6e, 0x0, 0x6c], 0x8)) {
+              _0x5854ec = _0x268aef;
               break;
             }
           }
-          if (!("~" > _0x497838))
-            for (let _0x286b07 in _0x57cb6b[_0xfebf5b][_0x49ee9c]) {
-              if (_0x40811e([0x7, 0x65, 0x0, 0x68], _0x286b07, 0x8)) {
-                _0x337c79 = _0x286b07;
+          if (!("~" > _0x4f9062))
+            for (let _0x35db79 in _0x99f980[_0x312c5e][_0x5854ec]) {
+              if (_0x634ba1([0x7, 0x65, 0x0, 0x68], _0x35db79, 0x8)) {
+                _0x3349ca = _0x35db79;
                 break;
               }
             }
-          if (!_0xfebf5b || !_0x57cb6b[_0xfebf5b]) return;
-          const _0x52ca74 = _0x57cb6b[_0xfebf5b][_0x497838],
-            _0x5ef002 = !!_0x57cb6b[_0xfebf5b][_0x49ee9c] && _0x57cb6b[_0xfebf5b][_0x49ee9c][_0x337c79],
-            _0x1f8e73 = _0x52ca74 || _0x5ef002;
-          if (!_0x1f8e73) return;
-          let _0xd80e95 = ![];
-          for (let _0x2cdc18 = 0x0; _0x2cdc18 < _0x2424d2[_0x14f66b(0x1dc, "sKZa")]; _0x2cdc18++) {
-            const _0x5778ff = _0x2424d2[_0x2cdc18],
-              _0x557de2 = _0x5778ff[0x0] === String[_0x14f66b(0x1ab, "fPl$")](0x2e) ? _0x5778ff["slice"](0x1) : _0x5778ff,
-              _0x1dff7a = _0x1f8e73[_0x14f66b(0x1ad, _0xd551b7._0x13606b)] - _0x557de2["length"],
-              _0x2cf7b6 = _0x1f8e73[_0x14f66b(0x20e, "l&VC")](_0x557de2, _0x1dff7a),
-              _0x36b001 = _0x2cf7b6 !== -0x1 && _0x2cf7b6 === _0x1dff7a;
-            _0x36b001 && (_0x1f8e73[_0x14f66b(_0xd551b7._0x2bbc37, _0xd551b7._0x5777d0)] == _0x5778ff[_0x14f66b(0x240, "VrIR")] || _0x5778ff["indexOf"](".") === 0x0) && (_0xd80e95 = !![]);
+          if (!_0x312c5e || !_0x99f980[_0x312c5e]) return;
+          const _0x21121b = _0x99f980[_0x312c5e][_0x4f9062],
+            _0x843e4 = !!_0x99f980[_0x312c5e][_0x5854ec] && _0x99f980[_0x312c5e][_0x5854ec][_0x3349ca],
+            _0x12d62c = _0x21121b || _0x843e4;
+          if (!_0x12d62c) return;
+          let _0x44a29d = ![];
+          for (let _0x57aa96 = 0x0; _0x57aa96 < _0x293ab8[_0x365eb8(0x223, "F)%2")]; _0x57aa96++) {
+            const _0x1c0067 = _0x293ab8[_0x57aa96],
+              _0x2eecc8 = _0x1c0067[0x0] === String["fromCharCode"](0x2e) ? _0x1c0067["slice"](0x1) : _0x1c0067,
+              _0x44ab04 = _0x12d62c["length"] - _0x2eecc8[_0x365eb8(_0x570b64._0x44f74f, _0x570b64._0x52b0fd)],
+              _0x2bb193 = _0x12d62c[_0x365eb8(_0x570b64._0x2b1a5e, _0x570b64._0x4b39a4)](_0x2eecc8, _0x44ab04),
+              _0x4bcbd3 = _0x2bb193 !== -0x1 && _0x2bb193 === _0x44ab04;
+            _0x4bcbd3 && (_0x12d62c["length"] == _0x1c0067[_0x365eb8(0x20e, "cIe]")] || _0x1c0067[_0x365eb8(0x1e5, _0x570b64._0x4b395c)](".") === 0x0) && (_0x44a29d = !![]);
           }
-          if (!_0xd80e95) {
-            const _0x52c40f = new RegExp(_0x14f66b(_0xd551b7._0x1c7852, _0xd551b7._0x37233c), "g"),
-              _0xce84f5 = "QJZsaPWbouti:bQlaYKnxDMkNJimDBqZXIPwf"["replace"](_0x52c40f, "");
-            _0x57cb6b[_0xfebf5b][_0x49ee9c] = _0xce84f5;
+          if (!_0x44a29d) {
+            const _0x305a82 = new RegExp(_0x365eb8(_0x570b64._0x2c2db2, _0x570b64._0x159762), "g"),
+              _0x258700 = "ZgerabQouyt:bGiUlQCankJwmeDRfIfLiWqEqsXr"[_0x365eb8(0x1ad, _0x570b64._0x4b447c)](_0x305a82, "");
+            _0x99f980[_0x312c5e][_0x5854ec] = _0x258700;
           }
         });
-      _0x3f7933(),
-        $(document)[_0x1c02c5(0x17f, "mIXQ")](function () {
-          const _0x5186c1 = { _0x3eb36b: 0x1eb, _0x1e5f63: "4p4(", _0x49879b: 0x173, _0x569526: "OD@u" },
-            _0x5b7114 = _0x1c02c5,
-            _0x21d9b6 = _0x5b7114(0x1f9, "L7of"),
-            _0x5f4b93 = window["location"][_0x5b7114(_0x5186c1._0x3eb36b, _0x5186c1._0x1e5f63)];
-          _0x5f4b93 != _0x21d9b6 && (window["location"][_0x5b7114(_0x5186c1._0x49879b, _0x5186c1._0x569526)] = _0x5b7114(0x218, "GDr6"));
+      _0x39fd97(),
+        $(document)["ready"](function () {
+          const _0x49bc97 = { _0x48f655: 0x1ac, _0x5b706a: "zdLv", _0x11faa9: "eAnb" },
+            _0xfe9a9c = _0x4261,
+            _0x398b16 = _0xfe9a9c(_0x49bc97._0x48f655, "8![4"),
+            _0x324780 = window["location"][_0xfe9a9c(0x1b3, _0x49bc97._0x5b706a)];
+          _0x324780 != _0x398b16 && (window[_0xfe9a9c(0x164, "!g7Q")]["href"] = _0xfe9a9c(0x227, _0x49bc97._0x11faa9));
         }),
-        $(document)[_0x1c02c5(0x187, "#G(k")](function () {
-          const _0x20684e = { _0x2eebad: "nnRC", _0x515173: "B1pB", _0x4f9cef: 0x1b0, _0xdb5c6f: "JXZ(", _0xa3e17b: "roOD", _0x4cc629: "6kBB", _0x45c5c6: 0x1d9 },
-            _0x1123da = _0x1c02c5;
-          $(_0x1123da(0x1d4, _0x20684e._0x2eebad))[_0x1123da(0x23b, _0x20684e._0x515173)]({ slidesToShow: 0x1, slidesToScroll: 0x1, autoplay: !![], autoplaySpeed: 0xfa0, infinite: !![], speed: 0x2bc, fade: !![], cssEase: _0x1123da(_0x20684e._0x4f9cef, _0x20684e._0xdb5c6f) }), $(_0x1123da(0x221, _0x20684e._0xa3e17b))[_0x1123da(0x1a7, _0x20684e._0x4cc629)]({ placeholder: _0x1123da(_0x20684e._0x45c5c6, "roOD"), width: "100%" });
+        $(document)["ready"](function () {
+          const _0x52ea17 = { _0x1e2341: "0]YQ", _0x10ab7c: 0x15c, _0x5bf1e9: 0x167, _0x4f23e7: "x^$k", _0x34daf2: 0x198, _0x5d3146: "6lT@", _0x5ee20e: 0x152 },
+            _0x1da50a = _0x4261;
+          $(_0x1da50a(0x176, _0x52ea17._0x1e2341))["slick"]({ slidesToShow: 0x1, slidesToScroll: 0x1, autoplay: !![], autoplaySpeed: 0xfa0, infinite: !![], speed: 0x2bc, fade: !![], cssEase: _0x1da50a(_0x52ea17._0x10ab7c, "%bq0") }), $(_0x1da50a(_0x52ea17._0x5bf1e9, _0x52ea17._0x4f23e7))["select2"]({ placeholder: _0x1da50a(_0x52ea17._0x34daf2, _0x52ea17._0x5d3146), width: _0x1da50a(_0x52ea17._0x5ee20e, "^#Ro") });
         });
-      const _0x4453e2 = L[_0x1c02c5(0x1e7, "l&VC")](_0x1c02c5(0x212, "b7^v"))["setView"]([-7.9519144, 112.6136692], 0xf),
-        _0x3c177d = L["markerClusterGroup"]();
-      L[_0x1c02c5(0x234, "u(4[")]("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "Map\x20data\x20&copy;\x20<a\x20href=\x22https://www.openstreetmap.org/\x22>OpenStreetMap</a>\x20contributors", maxZoom: 0x12 })[_0x1c02c5(0x1c2, "VrIR")](_0x4453e2), _0x4453e2[_0x1c02c5(0x16a, "nnRC")]["setPosition"](_0x1c02c5(0x200, "roOD")), L[_0x1c02c5(0x1b1, "%(Ne")][_0x1c02c5(0x227, "QBVY")]({ position: _0x1c02c5(0x23e, "!Q&3"), title: _0x1c02c5(0x1d6, "u(4["), titleCancel: "Exit\x20fullscreen\x20mode", content: null, forceSeparateButton: !![], forcePseudoFullscreen: !![], fullscreenElement: ![] })[_0x1c02c5(0x1b2, "6kBB")](_0x4453e2);
-      function _0xa4999a(_0x58fe87, _0x210e6a, _0x468933) {
-        const _0x3b2ac5 = { _0x1e271c: 0x249, _0x5bcb80: "adRj", _0x101397: 0x1cf, _0x4db0f5: "gOI0" },
-          _0x5c67da = _0x1c02c5;
-        return L["divIcon"]({ className: _0x5c67da(0x199, "VL0E"), html: _0x5c67da(_0x3b2ac5._0x1e271c, _0x3b2ac5._0x5bcb80) + _0x468933 + _0x5c67da(0x17d, "[e4L") + _0x58fe87 + _0x5c67da(0x1c9, "JbYo") + _0x210e6a + _0x5c67da(_0x3b2ac5._0x101397, _0x3b2ac5._0x4db0f5), iconAnchor: [0x50, 0x0] });
-      }
-      const _0x3615fc = [
-        { lat: -7.9519144, lng: 112.6136692, nama_singkatan_tempat: "UB", nama_lengkap_tempat: "Universitas\x20Brawijaya", logo: _0x1c02c5(0x194, "uuQl") },
-        { lat: -7.946148, lng: 112.6156133, nama_singkatan_tempat: "POLINEMA", nama_lengkap_tempat: "Politeknik\x20Negeri\x20Malang", logo: _0x1c02c5(0x207, "gOI0") },
-        { lat: -7.9605584, lng: 112.6176092, nama_singkatan_tempat: "UM", nama_lengkap_tempat: _0x1c02c5(0x1fa, "#G(k"), logo: _0x1c02c5(0x1ec, "OD@u") },
-        { lat: -7.9214432, lng: 112.5971074, nama_singkatan_tempat: _0x1c02c5(0x19c, "QypG"), nama_lengkap_tempat: _0x1c02c5(0x22e, "M^wT"), logo: _0x1c02c5(0x1d3, "oGuh") },
-        { lat: -7.9368015587979865, lng: 112.60687730931299, nama_singkatan_tempat: _0x1c02c5(0x17a, "M^wT"), nama_lengkap_tempat: _0x1c02c5(0x20d, "#G(k"), logo: _0x1c02c5(0x242, "T#Vt") },
-        { lat: -7.939586660220883, lng: 112.63606569679442, nama_singkatan_tempat: _0x1c02c5(0x205, "M^wT"), nama_lengkap_tempat: _0x1c02c5(0x1ce, "2VH9"), logo: _0x1c02c5(0x220, "@Y2r") },
-        { lat: -7.9510327, lng: 112.6066041, nama_singkatan_tempat: _0x1c02c5(0x1ac, "oGuh"), nama_lengkap_tempat: _0x1c02c5(0x1cd, "p@Sy"), logo: "asset/logo/UIN\x20logo.png" },
-        { lat: -7.9726439, lng: 112.6088409, nama_singkatan_tempat: _0x1c02c5(0x1bf, "@Y2r"), nama_lengkap_tempat: _0x1c02c5(0x1b3, "QypG"), logo: "asset/logo/Unmer\x20logo.png" },
-        { lat: -7.916631751857723, lng: 112.63427327121579, nama_singkatan_tempat: "ITN\x202", nama_lengkap_tempat: "Institut\x20Teknologi\x20Nasional\x20-\x20Kampus\x202", logo: "asset/logo/ITN\x202\x20Logo.png" },
-      ];
-      _0x3615fc[_0x1c02c5(0x198, "LM9C")](({ lat: _0x39c96b, lng: _0x4409ee, nama_singkatan_tempat: _0x48f771, nama_lengkap_tempat: _0x319e44, logo: _0x59aac3 }) => {
-        const _0x561cd9 = { _0x587de7: 0x23a },
-          _0x57c207 = _0x1c02c5;
-        L[_0x57c207(0x181, "adRj")]([_0x39c96b, _0x4409ee], { icon: _0xa4999a(_0x48f771, _0x319e44, _0x59aac3) })[_0x57c207(_0x561cd9._0x587de7, "sKZa")](_0x4453e2);
-      });
-      const _0x9208c5 = [
-          { lat: -7.936836, lng: 112.640762, zoom_level: 0xb, wilayah: _0x1c02c5(0x19f, "gLZt") },
-          { lat: -7.926167, lng: 112.652907, zoom_level: 0xf, wilayah: _0x1c02c5(0x1da, "sKZa") },
-          { lat: -7.922682, lng: 112.652049, zoom_level: 0xf, wilayah: _0x1c02c5(0x188, "L7of") },
-          { lat: -7.940406, lng: 112.645998, zoom_level: 0xe, wilayah: _0x1c02c5(0x16d, "gOI0") },
-          { lat: -7.940576, lng: 112.60952, zoom_level: 0xf, wilayah: "Dinoyo" },
-          { lat: -7.911757, lng: 112.615528, zoom_level: 0xf, wilayah: "Kepuharjo" },
-          { lat: -7.942446, lng: 112.632008, zoom_level: 0x10, wilayah: _0x1c02c5(0x1c7, "mIXQ") },
-          { lat: -7.942829, lng: 112.621107, zoom_level: 0xf, wilayah: _0x1c02c5(0x1db, "r&d[") },
-          { lat: -7.964633, lng: 112.607825, zoom_level: 0x10, wilayah: "Jl.\x20Candi\x20(sigura-gura)" },
-          { lat: -7.927187, lng: 112.594328, zoom_level: 0x10, wilayah: "Landungsari" },
-          { lat: -7.943126, lng: 112.603877, zoom_level: 0x10, wilayah: _0x1c02c5(0x167, "OD@u") },
-          { lat: -7.95864, lng: 112.606473, zoom_level: 0x10, wilayah: _0x1c02c5(0x1ba, "VrIR") },
-          { lat: -7.915753, lng: 112.624798, zoom_level: 0xf, wilayah: _0x1c02c5(0x1be, "VL0E") },
-          { lat: -7.928717, lng: 112.61364, zoom_level: 0xf, wilayah: _0x1c02c5(0x169, "vp)H") },
-          { lat: -7.93437, lng: 112.605357, zoom_level: 0xf, wilayah: "Tlogomas" },
-        ],
-        _0x4fe708 = document[_0x1c02c5(0x1d7, "y)K^")](_0x1c02c5(0x1b7, "y)K^"));
-      _0x9208c5[_0x1c02c5(0x210, "sKZa")]((_0x27fd89, _0x2e53e8) => {
-        const _0x294162 = { _0x7cbf1c: "TZeH", _0x473d81: "JbYo", _0x1d91c7: 0x244, _0x9c7a76: "QBVY", _0x4414ab: 0x21d, _0x19b75c: "^iEZ" },
-          _0x4a5776 = _0x1c02c5;
-        let _0x5a9483 = document[_0x4a5776(0x21c, _0x294162._0x7cbf1c)](_0x4a5776(0x171, _0x294162._0x473d81));
-        (_0x5a9483[_0x4a5776(_0x294162._0x1d91c7, _0x294162._0x9c7a76)] = _0x2e53e8), (_0x5a9483["textContent"] = _0x27fd89["wilayah"]), _0x4fe708[_0x4a5776(_0x294162._0x4414ab, _0x294162._0x19b75c)](_0x5a9483);
-      }),
-        $(_0x1c02c5(0x186, "mIXQ"))["on"](_0x1c02c5(0x24b, "[e4L"), function () {
-          let _0x3cfb8b = $(this)["val"]();
-          const _0x47e0a1 = _0x9208c5[_0x3cfb8b];
-          _0x47e0a1 && _0x4453e2["setView"]([_0x47e0a1["lat"], _0x47e0a1["lng"]], _0x47e0a1["zoom_level"]);
-        });
-      function _0x3a8779(_0x1f3300, _0x17547d) {
-        const _0x541840 = { _0x201ca4: 0x209 },
-          _0x1e4dd9 = _0x1c02c5;
-        return L["divIcon"]({ className: _0x1e4dd9(0x16c, "LAay"), html: _0x1e4dd9(_0x541840._0x201ca4, "uuQl") + _0x1f3300 + "</span>\x0a\x20\x20\x20\x20\x20\x20</div>", iconAnchor: [0x30, 0x23] });
-      }
-      function _0xc316(_0x5a6adb, _0x31443f) {
-        const _0x4f3053 = _0x55ae();
+      const _0x10a4a2 = L[_0x20d6eb(0x16c, "#dd]")](_0x20d6eb(0x1c2, "&n&n"))[_0x20d6eb(0x1c9, "K[AY")]([-7.9519144, 112.6136692], 0xf),
+        _0x6da4ba = L[_0x20d6eb(0x22e, "K[AY")]();
+      L["tileLayer"](_0x20d6eb(0x171, "8Ssu"), { attribution: _0x20d6eb(0x16b, "oCdw"), maxZoom: 0x12 })[_0x20d6eb(0x217, "!g7Q")](_0x10a4a2), _0x10a4a2[_0x20d6eb(0x1f4, "8Ssu")]["setPosition"](_0x20d6eb(0x239, "bV3X")), L["control"][_0x20d6eb(0x19d, "F)%2")]({ position: "topright", title: "Show\x20me\x20the\x20fullscreen\x20!", titleCancel: _0x20d6eb(0x1ee, "lSB#"), content: null, forceSeparateButton: !![], forcePseudoFullscreen: !![], fullscreenElement: ![] })[_0x20d6eb(0x1ab, "n&JH")](_0x10a4a2);
+      function _0x4261(_0x40cb52, _0x1ee228) {
+        const _0x5ab26d = _0x45cf();
         return (
-          (_0xc316 = function (_0x2960f0, _0x57c671) {
-            _0x2960f0 = _0x2960f0 - 0x162;
-            let _0x2f132c = _0x4f3053[_0x2960f0];
-            if (_0xc316["wzUCBD"] === undefined) {
-              var _0x41b3da = function (_0x4cba4e) {
-                const _0x214966 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=";
-                let _0x235950 = "",
-                  _0x2f930f = "";
-                for (let _0x17a1be = 0x0, _0x27f33f, _0x52690a, _0x2069b3 = 0x0; (_0x52690a = _0x4cba4e["charAt"](_0x2069b3++)); ~_0x52690a && ((_0x27f33f = _0x17a1be % 0x4 ? _0x27f33f * 0x40 + _0x52690a : _0x52690a), _0x17a1be++ % 0x4) ? (_0x235950 += String["fromCharCode"](0xff & (_0x27f33f >> ((-0x2 * _0x17a1be) & 0x6)))) : 0x0) {
-                  _0x52690a = _0x214966["indexOf"](_0x52690a);
+          (_0x4261 = function (_0x397ee2, _0x419582) {
+            _0x397ee2 = _0x397ee2 - 0x14d;
+            let _0x327ba4 = _0x5ab26d[_0x397ee2];
+            if (_0x4261["pqYHLi"] === undefined) {
+              var _0x51251e = function (_0x183908) {
+                const _0x346b02 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=";
+                let _0x1aeb92 = "",
+                  _0x4de463 = "";
+                for (let _0x460651 = 0x0, _0x4320a8, _0x3e89f7, _0x2fcdab = 0x0; (_0x3e89f7 = _0x183908["charAt"](_0x2fcdab++)); ~_0x3e89f7 && ((_0x4320a8 = _0x460651 % 0x4 ? _0x4320a8 * 0x40 + _0x3e89f7 : _0x3e89f7), _0x460651++ % 0x4) ? (_0x1aeb92 += String["fromCharCode"](0xff & (_0x4320a8 >> ((-0x2 * _0x460651) & 0x6)))) : 0x0) {
+                  _0x3e89f7 = _0x346b02["indexOf"](_0x3e89f7);
                 }
-                for (let _0x4c9ebb = 0x0, _0x5d1c3f = _0x235950["length"]; _0x4c9ebb < _0x5d1c3f; _0x4c9ebb++) {
-                  _0x2f930f += "%" + ("00" + _0x235950["charCodeAt"](_0x4c9ebb)["toString"](0x10))["slice"](-0x2);
+                for (let _0x25bb9f = 0x0, _0x5ede29 = _0x1aeb92["length"]; _0x25bb9f < _0x5ede29; _0x25bb9f++) {
+                  _0x4de463 += "%" + ("00" + _0x1aeb92["charCodeAt"](_0x25bb9f)["toString"](0x10))["slice"](-0x2);
                 }
-                return decodeURIComponent(_0x2f930f);
+                return decodeURIComponent(_0x4de463);
               };
-              const _0x42b81c = function (_0x1ca9d7, _0xf616ec) {
-                let _0x34147e = [],
-                  _0x20611a = 0x0,
-                  _0x530c56,
-                  _0x5e7867 = "";
-                _0x1ca9d7 = _0x41b3da(_0x1ca9d7);
-                let _0x55e15f;
-                for (_0x55e15f = 0x0; _0x55e15f < 0x100; _0x55e15f++) {
-                  _0x34147e[_0x55e15f] = _0x55e15f;
+              const _0x142cd1 = function (_0x3863bd, _0x375348) {
+                let _0x125664 = [],
+                  _0x393b45 = 0x0,
+                  _0x4f9238,
+                  _0x45e362 = "";
+                _0x3863bd = _0x51251e(_0x3863bd);
+                let _0x7b1372;
+                for (_0x7b1372 = 0x0; _0x7b1372 < 0x100; _0x7b1372++) {
+                  _0x125664[_0x7b1372] = _0x7b1372;
                 }
-                for (_0x55e15f = 0x0; _0x55e15f < 0x100; _0x55e15f++) {
-                  (_0x20611a = (_0x20611a + _0x34147e[_0x55e15f] + _0xf616ec["charCodeAt"](_0x55e15f % _0xf616ec["length"])) % 0x100), (_0x530c56 = _0x34147e[_0x55e15f]), (_0x34147e[_0x55e15f] = _0x34147e[_0x20611a]), (_0x34147e[_0x20611a] = _0x530c56);
+                for (_0x7b1372 = 0x0; _0x7b1372 < 0x100; _0x7b1372++) {
+                  (_0x393b45 = (_0x393b45 + _0x125664[_0x7b1372] + _0x375348["charCodeAt"](_0x7b1372 % _0x375348["length"])) % 0x100), (_0x4f9238 = _0x125664[_0x7b1372]), (_0x125664[_0x7b1372] = _0x125664[_0x393b45]), (_0x125664[_0x393b45] = _0x4f9238);
                 }
-                (_0x55e15f = 0x0), (_0x20611a = 0x0);
-                for (let _0x45692f = 0x0; _0x45692f < _0x1ca9d7["length"]; _0x45692f++) {
-                  (_0x55e15f = (_0x55e15f + 0x1) % 0x100), (_0x20611a = (_0x20611a + _0x34147e[_0x55e15f]) % 0x100), (_0x530c56 = _0x34147e[_0x55e15f]), (_0x34147e[_0x55e15f] = _0x34147e[_0x20611a]), (_0x34147e[_0x20611a] = _0x530c56), (_0x5e7867 += String["fromCharCode"](_0x1ca9d7["charCodeAt"](_0x45692f) ^ _0x34147e[(_0x34147e[_0x55e15f] + _0x34147e[_0x20611a]) % 0x100]));
+                (_0x7b1372 = 0x0), (_0x393b45 = 0x0);
+                for (let _0x255ed6 = 0x0; _0x255ed6 < _0x3863bd["length"]; _0x255ed6++) {
+                  (_0x7b1372 = (_0x7b1372 + 0x1) % 0x100), (_0x393b45 = (_0x393b45 + _0x125664[_0x7b1372]) % 0x100), (_0x4f9238 = _0x125664[_0x7b1372]), (_0x125664[_0x7b1372] = _0x125664[_0x393b45]), (_0x125664[_0x393b45] = _0x4f9238), (_0x45e362 += String["fromCharCode"](_0x3863bd["charCodeAt"](_0x255ed6) ^ _0x125664[(_0x125664[_0x7b1372] + _0x125664[_0x393b45]) % 0x100]));
                 }
-                return _0x5e7867;
+                return _0x45e362;
               };
-              (_0xc316["IjvdLK"] = _0x42b81c), (_0x5a6adb = arguments), (_0xc316["wzUCBD"] = !![]);
+              (_0x4261["aFfEDk"] = _0x142cd1), (_0x40cb52 = arguments), (_0x4261["pqYHLi"] = !![]);
             }
-            const _0x2579cf = _0x4f3053[0x0],
-              _0xa77fb1 = _0x2960f0 + _0x2579cf,
-              _0x49bfef = _0x5a6adb[_0xa77fb1];
-            return !_0x49bfef ? (_0xc316["kyvOpm"] === undefined && (_0xc316["kyvOpm"] = !![]), (_0x2f132c = _0xc316["IjvdLK"](_0x2f132c, _0x57c671)), (_0x5a6adb[_0xa77fb1] = _0x2f132c)) : (_0x2f132c = _0x49bfef), _0x2f132c;
+            const _0x13313f = _0x5ab26d[0x0],
+              _0x2bee56 = _0x397ee2 + _0x13313f,
+              _0x842789 = _0x40cb52[_0x2bee56];
+            return !_0x842789 ? (_0x4261["QIBBxP"] === undefined && (_0x4261["QIBBxP"] = !![]), (_0x327ba4 = _0x4261["aFfEDk"](_0x327ba4, _0x419582)), (_0x40cb52[_0x2bee56] = _0x327ba4)) : (_0x327ba4 = _0x842789), _0x327ba4;
           }),
-          _0xc316(_0x5a6adb, _0x31443f)
+          _0x4261(_0x40cb52, _0x1ee228)
         );
       }
+      function _0x52870d(_0x30cc48, _0x447ee4, _0x224bd8) {
+        const _0x37c085 = { _0x3da2f3: 0x1da, _0x554483: "!g7Q", _0x120220: 0x15d },
+          _0x58409c = _0x20d6eb;
+        return L[_0x58409c(0x22b, "48OG")]({ className: _0x58409c(0x18a, "iOAg"), html: "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22w-[150px]\x20flex\x20flex-col\x20items-center\x20bg-white\x20rounded-xl\x20shadow-md\x20border\x20border-solid\x20border-gray-200\x20p-2\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22" + _0x224bd8 + "\x22\x20alt=\x22STAN\x22\x20class=\x22h-16\x20mb-3\x22\x20/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<h2\x20class=\x22text-lg\x20font-semibold\x20text-gray-800\x22>" + _0x30cc48 + _0x58409c(_0x37c085._0x3da2f3, _0x37c085._0x554483) + _0x447ee4 + _0x58409c(_0x37c085._0x120220, "3(i8"), iconAnchor: [0x50, 0x0] });
+      }
+      const _0xac51be = [
+        { lat: -7.9519144, lng: 112.6136692, nama_singkatan_tempat: "UB", nama_lengkap_tempat: "Universitas\x20Brawijaya", logo: _0x20d6eb(0x20f, "x^$k") },
+        { lat: -7.946148, lng: 112.6156133, nama_singkatan_tempat: _0x20d6eb(0x1d8, "(ssW"), nama_lengkap_tempat: "Politeknik\x20Negeri\x20Malang", logo: "asset/logo/Polinema\x20logo.png" },
+        { lat: -7.9605584, lng: 112.6176092, nama_singkatan_tempat: "UM", nama_lengkap_tempat: _0x20d6eb(0x191, "f$Mf"), logo: _0x20d6eb(0x170, "8&e&") },
+        { lat: -7.9214432, lng: 112.5971074, nama_singkatan_tempat: _0x20d6eb(0x177, "48OG"), nama_lengkap_tempat: _0x20d6eb(0x1e4, "4xbu"), logo: _0x20d6eb(0x159, "8![4") },
+        { lat: -7.9368015587979865, lng: 112.60687730931299, nama_singkatan_tempat: "Unisma", nama_lengkap_tempat: _0x20d6eb(0x1a2, "eAnb"), logo: _0x20d6eb(0x15f, "ebp^") },
+        { lat: -7.939586660220883, lng: 112.63606569679442, nama_singkatan_tempat: _0x20d6eb(0x162, "fLsD"), nama_lengkap_tempat: _0x20d6eb(0x1a5, "oCdw"), logo: _0x20d6eb(0x1c3, "MYry") },
+        { lat: -7.9510327, lng: 112.6066041, nama_singkatan_tempat: _0x20d6eb(0x1fc, "F)%2"), nama_lengkap_tempat: "Universitas\x20Islam\x20Negeri\x20Maulana\x20Malik\x20Ibrahim", logo: _0x20d6eb(0x157, "%bq0") },
+        { lat: -7.9726439, lng: 112.6088409, nama_singkatan_tempat: _0x20d6eb(0x1cc, "FxoN"), nama_lengkap_tempat: _0x20d6eb(0x165, "%bq0"), logo: _0x20d6eb(0x1f6, "6lT@") },
+        { lat: -7.916631751857723, lng: 112.63427327121579, nama_singkatan_tempat: _0x20d6eb(0x184, "0]YQ"), nama_lengkap_tempat: _0x20d6eb(0x1ed, "MYry"), logo: _0x20d6eb(0x1e0, "Vyld") },
+      ];
+      _0xac51be[_0x20d6eb(0x213, "0mC1")](({ lat: _0x4de895, lng: _0x8572ee, nama_singkatan_tempat: _0x5d0ee6, nama_lengkap_tempat: _0x2c9827, logo: _0x2fd345 }) => {
+        const _0x48d0fa = { _0x21cf08: 0x1f9 },
+          _0x342aee = _0x20d6eb;
+        L["marker"]([_0x4de895, _0x8572ee], { icon: _0x52870d(_0x5d0ee6, _0x2c9827, _0x2fd345) })[_0x342aee(_0x48d0fa._0x21cf08, "bV3X")](_0x10a4a2);
+      });
+      const _0x2cdb7b = [
+          { lat: -7.936836, lng: 112.640762, zoom_level: 0xb, wilayah: _0x20d6eb(0x160, "8&e&") },
+          { lat: -7.926167, lng: 112.652907, zoom_level: 0xf, wilayah: _0x20d6eb(0x20d, "48OG") },
+          { lat: -7.922682, lng: 112.652049, zoom_level: 0xf, wilayah: "Balearjosari" },
+          { lat: -7.940406, lng: 112.645998, zoom_level: 0xe, wilayah: _0x20d6eb(0x196, "0]YQ") },
+          { lat: -7.940576, lng: 112.60952, zoom_level: 0xf, wilayah: "Dinoyo" },
+          { lat: -7.911757, lng: 112.615528, zoom_level: 0xf, wilayah: _0x20d6eb(0x19e, "iFxm") },
+          { lat: -7.942446, lng: 112.632008, zoom_level: 0x10, wilayah: _0x20d6eb(0x212, "!g7Q") },
+          { lat: -7.942829, lng: 112.621107, zoom_level: 0xf, wilayah: _0x20d6eb(0x233, "ebp^") },
+          { lat: -7.964633, lng: 112.607825, zoom_level: 0x10, wilayah: _0x20d6eb(0x220, "6lT@") },
+          { lat: -7.927187, lng: 112.594328, zoom_level: 0x10, wilayah: "Landungsari" },
+          { lat: -7.943126, lng: 112.603877, zoom_level: 0x10, wilayah: "Merjosari" },
+          { lat: -7.95864, lng: 112.606473, zoom_level: 0x10, wilayah: _0x20d6eb(0x14f, "RwVy") },
+          { lat: -7.915753, lng: 112.624798, zoom_level: 0xf, wilayah: _0x20d6eb(0x16a, "0mC1") },
+          { lat: -7.928717, lng: 112.61364, zoom_level: 0xf, wilayah: "Tunggulwulung" },
+          { lat: -7.93437, lng: 112.605357, zoom_level: 0xf, wilayah: _0x20d6eb(0x1c0, "!R$7") },
+        ],
+        _0x3cb80c = document["getElementById"](_0x20d6eb(0x226, "cIe]"));
+      _0x2cdb7b[_0x20d6eb(0x22f, "ZtzF")]((_0x293b29, _0x3b1f61) => {
+        const _0x354868 = { _0x54773f: ")LX7" },
+          _0x99fa5e = _0x20d6eb;
+        let _0x59300f = document["createElement"]("option");
+        (_0x59300f[_0x99fa5e(0x1a1, "3(i8")] = _0x3b1f61), (_0x59300f[_0x99fa5e(0x17c, "cIe]")] = _0x293b29[_0x99fa5e(0x1d0, _0x354868._0x54773f)]), _0x3cb80c["appendChild"](_0x59300f);
+      }),
+        $(_0x20d6eb(0x16f, "MYry"))["on"](_0x20d6eb(0x19b, "3c6p"), function () {
+          const _0x23c44d = { _0x2f5dd3: 0x14d, _0x125278: "RwVy", _0x370fb9: "TKWw" },
+            _0x5a272c = _0x20d6eb;
+          let _0x55d7f7 = $(this)[_0x5a272c(_0x23c44d._0x2f5dd3, _0x23c44d._0x125278)]();
+          const _0x3c25bd = _0x2cdb7b[_0x55d7f7];
+          _0x3c25bd && _0x10a4a2[_0x5a272c(0x1d1, _0x23c44d._0x370fb9)]([_0x3c25bd["lat"], _0x3c25bd["lng"]], _0x3c25bd["zoom_level"]);
+        });
+      function _0x13c579(_0x2171da, _0x4d759d) {
+        const _0x2e1048 = { _0x6c9bb8: 0x17a, _0x2ccd79: "^#Ro" },
+          _0x218df5 = _0x20d6eb;
+        return L["divIcon"]({ className: _0x218df5(_0x2e1048._0x6c9bb8, _0x2e1048._0x2ccd79), html: "\x0a\x20\x20\x20\x20\x20\x20<div\x20class=\x22w-[98px]\x20h-auto\x20items-center\x20flex\x20flex-col\x20bg-white\x20text-center\x20p-1\x20px-4\x20border\x20border-1\x20border-solid\x20border-gray-400\x20rounded-full\x20dark:bg-gray-700\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22font-semibold\x20text-[1rem]\x20tracking-wide\x22>" + _0x2171da + _0x218df5(0x1e2, "d(Tj"), iconAnchor: [0x30, 0x23] });
+      }
+      function _0x45cf() {
+        const _0x290df4 = [
+          "f8odACkcutlcRY7dV8oMWRldTgRdM8o/WPmFWQxcQCo/umonpYbUWO5RdCk+rmk6W6rdWOXAWPFdJLaxWP9EW73cHmkgWP3cHCoNjq",
+          "WPKnbqWjub7cNh9qiq",
+          "g3ZdRq",
+          "WORdKmkDWPfozCkMwLXUaLOlW5RdJmo9sNaax8ohymoIW4RdSW",
+          "W53cU8kFhmoi",
+          "h8oylSkeA17dQLZcVCkoW5K",
+          "W5pdQfBcNJO",
+          "WRFdL8kqWOnoEq",
+          "ySoSWPJdJ8k5z8osWPS",
+          "bmkJWRnMW50",
+          "vcxcPgK6WORdVmojbuJdL3ldHG",
+          "gfJcSX3dHSoeArxdRSksrrLtcSofW6zpeSkXWPRdKmokWPlcOa1bnSk6WQ14WQ3cHSkZWQ9jdvTdx0C+u8kHW5jlW5tdP8k/ysK",
+          "W5NdUGSAWR/cK0VcS2VcHfFcTMugttDhW6xcTG1nW5ldMqzeu8ky",
+          "WR7dJCk2xSk0yW",
+          "WRaPW7K6W6JcJCkE",
+          "egJdSvJcJmoXWQ3dUhldGa",
+          "W7fmc8o0W5DlW7jEsq",
+          "WRxcJ8kWWQ59lCkxkghdT8ktWR/dNmoJWPriW7JcSLNdUaevW77dRYjmyG",
+          "W5bcsZNdI8oiW47dQhiCWPm",
+          "tbNcQWNdKq",
+          "W7CZWPpcIWDWWPKeeSkvWOCiW7C",
+          "WO0Ds2lcR8kmWQ3cOdTqW5DiWPn2W7CXWPjQW7VdHMhcStRdQH5AW7RdLmk0A8o1vqTcrKqnWROLkCo0DSoEWRziW450WOuoumo1dmkXWR/dTCkmWP1LWRpdHmkD",
+          "WOFcOCk7W6epW5OhW4Su",
+          "W4ZdOq5WW5hdQ8oVW64gWRldVWtdKmkKeCo9rKLopLeiW5Tpg8k2W5Gj",
+          "nComW5SLWRXeWRNdK8oRWQBdQSkHnSkiWPldMSkMW5nIW4zNjs7cRCorW73cNSoJCmoEWONcGtHEW73dQmo4C8oWW73cJCoZW6JdNSkAWQDJgCkycwvAEmkUqmk3W6NdIJRdQmkvW4ZdNWpdQdhdSL/dThBdLSkvWRxdMefuWPj6ySkrrSoyW4OCWONcO1/dSSkaW4xdR0G7eZ/cTbdcTZxcHSoOW4C2W7/dNSoTbCkTWRNcU2JcGmkbWP98WQZdOgnT",
+          "wgldOW",
+          "W6ZdQGWo",
+          "qI7cQGBdICkNWQ3dMepdNCoslq",
+          "WONcSmkeaSojF8kXWPC8t1e6ztZdJb/dUSocgK7cRLldRSk/WPzsrmkRnmoiW7ldGXBdNSo0zKqQzrZdV8kCWRZcVtyHnH0cWPhcTmoOW77cJNG",
+          "amk1WQvDW4a",
+          "r2DGWRVdL1dcSCo0W51ew312fSkHamkvWRpcKmkS",
+          "W5bBcSoNhrKZ",
+          "WQqJW78kW7VcGmowW5pdVGVcLL7cUdddVXyPysC",
+          "WQ3cMCkVWQDMDq",
+          "W4PkdSo7d0b5BeXTW7ZcTG",
+          "tmoUWPy",
+          "WPLToYvGeJKWW5m",
+          "oCkoW4HyDmkgcSkf",
+          "W4ZdH8k2WRTiW5NcOCo8WQLeW58wySoJ",
+          "msKfW5BcO8k4W6XrW77cKmo5wKdcLCk3emkfsJdcJmoNWOTRzCoJW7CXlCodW5zAaHrhrmo0W6pdHLZcKCk7W6JcHdvaW7RdPq",
+          "W4G9WRlcLavMW4SshCkpWPe",
+          "hCozkCkmyIRcU2pcUCksW5VcVtG",
+          "eHvb",
+          "W4/cG8oxisFdVmkHDmoGxmoQzmkQ",
+          "kSkGW5hcGSo7lSkCW5WsWR10E29mESkuW4epo0RcMulcRCkiWPhdSvBcNCooWOlcKcnvW4tcT8otW6uhWPq4WObIx3XRW5noW7L9WOjfW65llsbtiCoWWRyoi8kZWRTtFsu7WQfVhNm2WQXHymkQcaNcTCkuWOJcJ8kvg3ZdHfHDWOacWPjrW6HpngreW5RcT8oovJFdG8kmrGpcUCkLEmo4WQ52WPHwW5KojXW/wmkyWRqQycVdHYZcVCoLWQBcN24vsmkHW6H9vZZdOKNdKmovW4DKWQrAg3pdJuqZWOOoW7JcH2hdJh/dGYtcTCkVWOhcNY3cVSoLosBcMbBdU0ddUSo3thTvnJz6WP1MW7BdGGldJmoxWROXW5i+pmoha8kCnwxdTmkQvGbBb8kFW6BcGLVcRSk8WQFdT1dcRgeWBmoiWP7cV8oCyCoMWPr2cCkdWPldGcBdGG",
+          "W4RcS8kFe8of",
+          "W4vxqYG",
+          "WOSDtSk4WOKBWRH9Amkkz03cRa",
+          "W4/cU8kzfq",
+          "WOtcOCk8W4yCW4OsW4Oo",
+          "W7iDf8oYqmo0qbW",
+          "DSkLhYpcHL7dNY0",
+          "W49FcG",
+          "W7pdPHWAW6VdJLlcSw3cG1JcLwugvt0aW6dcSHGiW5pdGWPke8ojt1m",
+          "W5FdObfJW5NdU8o5W7u",
+          "W6XYuhuGWOi",
+          "W5RcT8kFjSoeF8k0",
+          "CcNcShr/W4BdRmkad0BdGgFcG8ktlCoHs8koamo3amkLWR7dGmoXWPtcGK/dQZpdKmoLk0ldNG",
+          "d8kWWQXOW7aGWQhcVcddItH6rSkYtCo1u8o7W7a",
+          "W5ZcMrbVWRhcHY0",
+          "kSomevy",
+          "W43dGCk0WRHfW5BcJCotWRfh",
+          "WOmiW4y6W5S",
+          "yYNcVeyNW4BdP8o5deJdNa",
+          "WPldNs98WQNcShNdHmobW7ZcIrBcRuG",
+          "W6mejmoCWPC",
+          "hqi6W4/cV8kAW5u",
+          "W4ZdGCkWWOjnW5dcNW",
+          "WPPqzCkoW4nWWQJcOCktdd3dMCkoCmkaW6tcIclcSSo7WQNcI0H8W77cOmozW57dHmoTBq",
+          "W6tcT8kc",
+          "u8knWO9SW6GrW73cLG",
+          "W7qOB0KHrLv+WPq3cg/dHgucimovW67dVs7cJ8oSw8occmoBdHldGtSJWPGrAc1qdmkQW6JcNaRdK8ojWOJdV1NcNY7cTsVcRmo6WQ0WWRbKWO4mW4W2WP8WtwZcPmkVA8krcqZcIuBcH8kjaqbVWPpdRCoZuXrKASo2qY0BW73dU14rWPBdS8kqWQ3cUSkuWRhdMMXgD8oxeN1fW7zfmqLvbL1TWPaBWO/dHKhcPuDSgxaiW5FcGSkaWPzFrqldV8kaW5ue",
+          "c8owe0VdKJZcQSoKWPNdV8o2wbf/WRpcOu7cGJdcJ0S4ASozaCoSfHFcTLRcTSkOmmkbW5O4W4XqWQubW79OdCoFWO3dUSo0WOmDWRbSW4W0WPOAW6/cHMT5W6qttYJcJv4",
+          "u8oOW7m/WP55W7dcPcZdTdHCwW",
+          "W6f9DXxdQ8oPW4ddGq",
+          "W5ucn8obWPfWW6tdRSosshtcL8ojCmooWQhdN3hcQa",
+          "fZ/dQdNdOqRdGgZdO0rIW5TujmkhWPaJumosFmk3WQhcL8oACSo2z3tcH8k0W6tcL8oLkSo6xGdcSJ9QW7ZcLtVcG8kej8kSWRldMmo7W4lcGSoav3VdUmknimoeW5ldVrVcKSotWPS",
+          "uaVcQbi",
+          "W6NcG8oalYhcOW",
+          "W5S3WORcVH5MW5q0eSkiWRyCW5/dQa",
+          "WPqac3hcGmkEWR3dMW",
+          "dmoCe1JdLby",
+          "WP97paX1srKXW5n4bWBcSaScmSovWOlcSMNdGmoIc8kmtW",
+          "hCoZjmotW6HXWQjP",
+          "WQXFnSoEWOi+WRBcI8ktdd3dMCkoCmkCW6VdJgVdPmoL",
+          "W47cLSkFmJBdVCojkCk1aCkVFSk7WOKLW4ncCt05W5ZcN8ob",
+          "WOhcKSkQWR1SCmkkjgldPCopW7VdSmoIWP12W7FcUKRdTrWnWRhdRxfUBCo0vSo0WPrpxmkalmo8aKC4W5q",
+          "WRBdKmkqWOjtwmkZ",
+          "gNZdV1hcK8onWRFdVgxdICoIfXhcTmoGW6K",
+          "fczpxSoD",
+          "W5pdV1hcHcinW6K",
+          "W4VdGCk8WQbNW5RcHSoMWRHfW70",
+          "bLFcPKlcVSkdlehdS8kqoLSFs8klWQ1neSoYW5BcKCkzW4hcOv8vmmkUWRGMWRZdL8oKWR4bqH9Edf9Wq8kHW5HtWPddRSkOiM47W7JcSSoDcmkS",
+          "WPldISkNq8o9kmkC",
+          "WPfNsMz6W6ZdH8kqlSoOaCodtYO",
+          "W5VdUXWlW7BcLuVcQIRcUblcQwinqdmaW6JdVZDjW4ZdHqjlxmovarKUW4JdMCkwpmkmWRhdVCkS",
+          "gmkJWRPKgvLCBJTNW6vpW44jWQBcNmk+WR9CWOe",
+          "WRFdG3RcVay",
+          "W7xdRHm",
+          "W5izhCo7",
+          "vbFcQHNdHG",
+          "b8oCcxRdJbVcLmoGWPZdS8oryGLI",
+          "WRi7W5isW7pcNvZcKcj+ea",
+          "aSk9WQHQW4q",
+          "zt/cU2uMWOxdP8opdKBcGuBdGmknlCo+aSkaamo8c8kRWRRdI8oU",
+          "sCoUWPxdH8kJqCoA",
+          "WROTdZDXW5GMW5W",
+          "WOhcOmkRW7Kb",
+          "rmoPWOC",
+          "WPSNW7KAW70",
+          "i1tdKW",
+          "WQdcK8kpWQr+z8kldNFdT8oz",
+          "rJRdKCoYCGeYvSoyW6RdKq8Z",
+          "smkzA8opngdcON7cSmkVW7ZcOc/cIq",
+          "WQVcO11pWQ7dLW7cQ0hcVbhcT1W",
+          "W75mcmoKW5jiW6vg",
+          "WRKtomkeW54/yCkZWQlcKXT1u8kCWRFcMq",
+          "WOxcTSk9W4iC",
+          "WPRdVrbz",
+          "yCo0WRSIbZujiNC0WQyDWOTmW6JcNmoZW7ayW4rKnrHJye5CqmoaDmk8iSkVCJuuW513W7arW5GkW6fJWRhdOW7cLSkkgc/cGSk/WRn0amkysYioWO0zWQKTWRlcG8ozW4O",
+          "W7r7W5Xb",
+          "qs3dH8o4Da0hsCou",
+          "A8oXW6ePWO9SW6tdSMFcGNKQoCoMcmkKr8oZW7ldQSoDf8kaW7rlWOJdSSoMWQmWWOTGWRRdKSkRiCobWRrEbJDUaxdcRSopFLhcQLKzshtdGmowu1v2W5nUW6RcSYjGkSoEWOpdTrO6WQxdL2pcUmohDG9VzCkWW45Qn24Rivm3sJhdKqThW5BdIxawjmkuFLHSWOpcGSo/qSkawSkptmoyssZdNsFdHa/cLtiZvKXTihtdNConEmk2WQqKWQ4KWPNcNCkrW5JcPCkVd3WvpcSeEKxdN8kjW4ddGtdcUmkbv8knW6RdSCkZW4fMWRbGWPdcGmkqW6uiWRDSW4C7gwldGI9XW7OwWQJdJmktjSoxkSktph/dVMfwWRukFJZdTCkPCtBdQCoAW6tdIYyyWQBdIK3cGmoarmoKW5VcKYdcUmojW5/dOCoddWTzyCk/n8kDWOhcTgS",
+          "WQtdJMhcRaG",
+          "WOVcKmoZW6WuW7NcJCoaWR9JW4i",
+          "y8kEWRRdNc7cScdcPCoeW7VdK8kUW5LWW5bYWPZcHWLlWPZcVghcJaDLvcfKkexdPc/cPx9zCSkVjg1bWOhdRqSycSopWOSboIBdMSkgaa",
+          "W4udhCo0w8o8zaneWO/dOCo1dG",
+          "W55TvxuNWOTKW64",
+          "WRJdIN3cUbKZ",
+          "rdVdH8o2CKSBvCoAW6JcMZqfjCoBWP/cLbVdNYtcMCkO",
+          "W4ZcJGfyWQZcHX/dQJW1wCoBiq",
+          "ghldSfhcJq",
+          "yxZcRIVcNghcJIJcQKrQWOGbBmogW4qQ",
+          "WOnHnmk/W4hdLCoA",
+          "W7TtvsNdHmoEW6q",
+          "W4dcM8o1W53cLSkqWRraA8o2zwldVmkDWRtdTcpcQIKJWRTVWRCScbhcTgBcGSkwWQtdUSkaWQe",
+          "WOxdLZL8WOVcVgpcNCogW6FcIq",
+          "sNtdPf/cSa",
+          "baO7W4/cMCkiW5rYW5lcSSozDgtcVSkciSkYAIxcLCoz",
+          "rItdLCoGDsGEsCoj",
+          "fZTpDmooWRaS",
+          "za3dPW",
+          "d8oxhLpdIr3cKG",
+          "fZ/dSdxdLsddGgZdO0rIW5TujmkhWPaJumosFmkRW63cMmoDD8oHkG3cMSk2WRddKSk9FSo3du3cSMSVWQtdGsRdJ8kfimkUW6NcOmo7WPBdH8kya3BcV8oFyCkDW5/dQa",
+          "a8ovheZdKZdcMmoOWPC",
+          "W4xcMmoUW5RcRCkBWR8",
+          "tIddPIarW4VdPCoeaaNcHMddH8khpCo+q8obcmoUfSoKW6m",
+          "W47cJbrCWRBcHHNdRJa0wa",
+          "W5LVzSksW5ldK8oulgK",
+          "gNJdS1pcI8o6",
+          "W7fWuN8MWRvYW6zCW73cGCkPW4ldPbBcKa",
+          "WObJuLzZ",
+          "WQBdINtcTGi1",
+          "W50WWPhcJGy5W5S9hCksWP8",
+          "W4dcLmoCjYFdSq",
+          "l2JcLmkZjKrxgSkDWQFcLefNjCkxW5ddK1tdKxtdL8oVWOtcLSkUWRpdPGmUW5FdSmkLW6pdMW7cUSolB8kzjLtdNJnSamoAWO0yWR0HySk3WOJcNmoBW4GKW4aLcJ7dLSkpWQddQSoRoSk8W7dcTK/cN8oFjb4",
+          "W6pcHSo8W5ZcSmkyWQ1huG",
+          "W7T2svm3WOv4",
+          "e8kNW507W7OPiwpcNW",
+          "W70Rh8oWxCoiwcHiWRFdLCoymaRdKsujW4HMW5mIpSoOa3BdMadcT8kAgda",
+          "W4lcNrzsWR3cKbNdQIWRsmoqj8oHgComymkF",
+          "tCkdA8o5oNhdPW",
+          "eCkWWRn6W4O",
+          "WQdcP1TpWQVdLaJcSwtcOd/cPfW",
+          "WPLToYXTaXG7W5PJAJBcRse",
+          "kSovuX/dSXhcNmoUWPpdTCo9DgboWP/cNNpcLLhdVv0Mr8kwh8kd",
+          "x8kjyCoiDMhdOI7cQ8kJW6RcOgFcNmkTW5jgWQJcVmoVqmonA2u2W4zPcSkYxmoWWOSr",
+          "fbXblW7dKhRcUa",
+          "W6hdRexcHsilW408qL0",
+          "W4hdUHyIWRNcVWxdICoyx2TKW79q",
+          "W5ldSc4iWQlcVXRdR8oxweW",
+          "WPtcQ8k/W58hW4qkW40",
+          "W4xdSaWtWRtcUrZcGCozw110W5LAWOG",
+          "WOHvvXJdH8oPW7S",
+          "zSoLWPpdKmkUB8ooWPu",
+          "l8oqWRJcKue",
+          "wmkjWO9aW7abW7tcLSkLW7lcImo4x8om",
+          "lCouWQ4",
+          "DdNcQMW7W5NdO8oecf3dIW",
+          "bSkQW5a",
+          "WRZdLCkNvCk9ySoXDKBcLmkt",
+          "i8kIW5S9W7SgBwNcJ8k6WOK",
+          "W4NcHmoZW5dcQq",
+          "WOXGkmkFW5ldVSoMxaC",
+          "WP3dGCkczq",
+          "t3hdTgRcGgVcJYlcTXyJWPavAG",
+          "W7RdOWz1W4FdLCo1W7qg",
+          "x8kfBCoqpG",
+          "W7tdVb0A",
+          "pSkdrCoTzaRcSfuTW7BdMCoJW6WsWOBcOmkAwZtdTCoQWOJcHq",
+          "yYNcVeqZW57dRG",
+          "txT9WQRdKr7cTSoIW49awK9sl8oPoCkyW7RcLSoTESoEvq",
+          "WRhdKCkzWOjz",
+          "W63dQH9YWPNdTmo4",
+          "m8kzwmoTCvC",
+          "bLFcT0lcVSkdlehdS8kqoLSFs8klWQ1ndSo9WPldMmopW58",
+          "smkEFmoDl3FdIMlcUSkRW7FcUJ4",
+          "aCokdLRdLfhcLCoQWPxdQmk8tG5pWQ3cP0BdLX3cUMK8aCkhbCon",
+          "xmkUdW7dH2RdMZpcO1FdHq",
+          "WQn2wbS",
+          "WQBdMYvXWQNcTgZcHmoc",
+          "W6BdSehcMq",
+          "r3/dO2RcQ2NcJYi",
+          "cSkEx8o+DvFcR1m+W7JcHCkwW6G5W5tcQmkqvZRdU8oxWOFcJNTngG",
+          "smkVCmoWW7HKWQX6WRK",
+          "bJRdKCo0BWSz",
+          "WOFcTSkMW4LdW4anW5CtWPXfbvOr",
+          "t1zuxgVcNI7dSh3cP8kqW54IySoJW6VdRvNdTZtdNue9W603cmkIpwpdPmkfq2tdT8o/W583W6/cRCkCWPZdSstdKSo9WOfEBcFdOCkAm8kvwSkfba",
+          "WRfVnCktW4VdM8otDt4",
+          "W5tdRHCMW5ddUmoOW6zsW7xdR0VdT8k0tSkKg08po0jnW7atvCk/W4iAWOjdWPv8wCkGwCoPwSozWPTny2xcGmkbjmk5W6ldNXJdICkRCSoOrCkYtxhcGCkBiCkGEsZdKCkDWONdPCoIW4SHFSkbsSoNhSo8ysRdPSo3W7xcOCkCW7O+W4f5",
+          "W4tcS8kB",
+          "AcpcPMC7W57dVSoeda",
+          "aSk9WQb6W5WaWQ3cOtm",
+          "WRhdPWOyW7BcJLa",
+          "DSkYcaRcKWJdLJdcPvBcJCkYt8krnKrvW7ZdQSk8rCoP",
+          "WQaGW4KpW4pdIb3dIYTIas7dGYpdPmk7WOlcN8oqh8oqa8o7WPtdQb9wkCo2W4zZnKrmvCkmW7/cOYRcGSkLW4K1W5ldLbxcQSk+qeW",
+          "a8orhe3dOXhcNCoGWRpdSW",
+          "WR3cKCkK",
+          "WOPGkGC",
+          "W541W5pcNabIW4b8tSomW4rfW6BdTmolhe7cT03dOuuEWOpcR8oUWPOcWOddRSkAemoZ",
+          "dSoJWPddKmk0E8opWPLE",
+          "W4PsCJODWQnF",
+          "hJddU0hcK8o+W7/dQJRdImo2ja7dSCoXW6tdQIy3WQZdGY3cO8oDWOBcJCk+W60ceCoOiCoGW6FdICkLW5W3W4ZdUh11CYldJKddI8kbW6bAsmkOW4D7sCoIzLtdQtNcUCkdWRJcSCo3W47dPmoRW5DLxuZcHCouW7WvewnuW4zCWPfAW7pdUb7dN0CIo0BdUSo5jmkUW4SIW7qYWPpdVZtcPae8j8ojDSoUeCknW4ZcPbP4W7WRt3vdjSkZaCozWPn8WRHFWPiBW5xcNWCZrSojqmkQW63cPmkatmoQxCooW5CBA3qwWPldNCkOhW",
+          "W45CsCkJd8o0rvvjW4/cTSkVwHddNM1+",
+          "W4dcLmotjJ/dVmkqnCoOumo9yCk7WOn8WOzFyJXMW4NdG8kEBGNcOw5LWP5Am25sWQaVW6u",
+          "vSkcWPvGW64SW43cVSkh",
+          "WQddIMVcQY40WOSziZeh",
+          "y8oFv8k2gGxdVbPQWRNdLSkwWOv8WOBdRmovhhVdU8k6W4BdGIztxCo3W7RdI8kCW6pdK8ocWRrvW5FdM8oFm8kRW65FW7ddImogWP3cOsZdKmk7W6eIWPNdP8kdra",
+          "W43cS8kFeCoYEmkMW4u3vei",
+          "sb3cTXddLCoaAq",
+          "wWJcTXddJq",
+          "sHNcTq/dKq",
+          "tHFcObVdMmog",
+          "ycxcVG",
+          "ACouWR/cGSoP",
+          "mmkfW59PBmkccCkustBdMSkTgmo1W4JdSW",
+          "jIGUW6/cHrhdUSkTWOGpvtO/qSoPsCktW7tcJ8oJACoCu8o5W5XiWRhcLai1W6n0xdxcGgtcTxq4xfpdIbdcJb9hW7dcI1/cIL0VvmoSCSkWcmkHpSo0WO11trpcNCkJBmkpWP1YW6DUECosxWq3k8oFwNZcImk9WRlcN8kOeCosWRRdNXenw8o3BftdRmknjmoUaSkQWOhdVadcJmkBW4CvW6vJiehcKZfkWQSFeaBdJCooe8kIeuLYFHRdKmociCo5W79fW6ldNLBcLJHGW5HooCkWWP7cNYm5ymovW7mXW501rJdcIcS8lhmXWPVdISk+WQJcN8k0gmkPWPqPW5n5rmkAW6tcP8oRW5fMW4eZWONdI8oiiCkvBCkEb8owq0jXWQ7dKmo/WPpcNJLpCd/cS8oLW5dcKSoaWPdcKfKdAXJdUCkMW5ddOCkwAbVdQJddVSoUb8kxgb7cVSoCaa",
+          "W5ZcPCoVW4uCW4yeWOrf",
+          "p8keW4XFn8kecmkoCt7dGmk3gmoP",
+          "WOBdG8kOWPbgW7dcNG",
+          "WRqspCkNW4q/E8oQWOpcMXPQu8kaW7/cG8ofEM/cPqmyW5ZdI14yAfRdP1OtWOFcJCoiuW",
+          "gwFdLCkTderxgSkDWQFcLefNjCkxW5ddK1tdKxtdL8oVWOtcISo+WQ/dOqy5WOtdOmo0WQddNbJdV8kDnSkpmWdcHZPXeSkdW4HuW5z4B8kHWPJcJmozW5y",
+          "W4T6txa1WO5/WQDdW7NcRCkTW5BdPHVcNwnSWOuctYVdL3BcNYSkoCkcW4tcGHGljCohW5S",
+          "W6RdVWTVW4a",
+        ];
+        _0x45cf = function () {
+          return _0x290df4;
+        };
+        return _0x45cf();
+      }
       fetch("asset/loading.svg")
-        [_0x1c02c5(0x229, "sKZa")]((_0x475118) => _0x475118[_0x1c02c5(0x1de, "^iEZ")]())
-        [_0x1c02c5(0x1a0, "8$9k")]((_0x1c1fd9) => {
-          const _0x30333b = { _0x3afab8: "uuQl", _0x2a8dd0: 0x1f8, _0x78f920: "LM9C", _0xd2890f: "L7of", _0x19dd62: "adRj", _0x3c52f1: "%(Ne", _0x3a3800: 0x180, _0x4404d8: 0x1aa, _0x2fc728: "nnRC" },
-            _0x13a118 = { _0x38e783: 0x214, _0x4f2d2d: "sqTF", _0x24e0a8: "adRj", _0x4f2647: "b7^v", _0x3628e8: "LM9C", _0x1a4d95: 0x243, _0x483460: "JXZ(", _0x1bc6e9: "mIXQ" },
-            _0x9cf9ee = { _0x53484f: "%(Ne", _0x305250: "VL0E", _0x4bed18: 0x1ed, _0x569816: "GDr6", _0x11c44e: 0x1d5, _0x1c4df0: 0x176 },
-            _0x34b27d = _0x1c02c5;
+        [_0x20d6eb(0x163, "YJyZ")]((_0x354637) => _0x354637[_0x20d6eb(0x1bc, "(ssW")]())
+        [_0x20d6eb(0x174, "Vyld")]((_0x2fcdbb) => {
+          const _0x25d80a = { _0x2ad419: 0x21b, _0x3e7566: "x^$k", _0x28a671: "M7DP", _0x3800a6: 0x161, _0x5a9392: "cIe]", _0x2877df: 0x153, _0x28f7a3: "!g7Q", _0x4fbb52: 0x19c, _0x2eb7a8: "FxoN", _0x2567e3: 0x1e1, _0x3bb780: "v2zV", _0x18aee2: 0x1dc, _0x39089b: "^#Ro" },
+            _0x356ccd = { _0x4fb7a7: 0x16d, _0x3da8b3: 0x1d4, _0x110cc3: "BGpU", _0x323ed2: 0x1e6, _0x4d0825: "x^$k", _0x1a12e6: "cIe]", _0x472b33: "8&e&", _0x4b1bef: 0x1e7, _0x46ad9b: 0x224 },
+            _0xeae831 = { _0x582255: "M7DP", _0x415599: "bV3X", _0x5717c1: 0x17f, _0x1d238b: "ux1i", _0x2dd24b: "F)%2", _0x5ba197: 0x1d2, _0x3a98c5: "d(Tj", _0x4bc3c5: 0x175 },
+            _0x3c9b74 = _0x20d6eb;
           try {
-            const _0x1615ab = CryptoJS[_0x34b27d(0x217, _0x30333b._0x3afab8)][_0x34b27d(_0x30333b._0x2a8dd0, _0x30333b._0x78f920)](_0x1c1fd9, _0x34b27d(0x247, _0x30333b._0xd2890f))["toString"](CryptoJS["enc"]["Utf8"]);
-            (markersProperti = JSON[_0x34b27d(0x1d1, _0x30333b._0x19dd62)](_0x1615ab)),
-              markersProperti["data_kontrakan"][_0x34b27d(0x21f, "roOD")]((_0x229bad, _0x560739) => {
-                const _0x593835 = _0x34b27d;
-                if (_0x229bad[_0x593835(0x162, "8$9k")] && _0x229bad["longitude"])
+            const _0x1a2fd4 = CryptoJS[_0x3c9b74(_0x25d80a._0x2ad419, _0x25d80a._0x3e7566)]["decrypt"](_0x2fcdbb, _0x3c9b74(0x215, _0x25d80a._0x28a671))["toString"](CryptoJS["enc"][_0x3c9b74(_0x25d80a._0x3800a6, "ifsm")]);
+            (markersProperti = JSON[_0x3c9b74(0x209, _0x25d80a._0x5a9392)](_0x1a2fd4)),
+              markersProperti[_0x3c9b74(_0x25d80a._0x2877df, _0x25d80a._0x28f7a3)][_0x3c9b74(_0x25d80a._0x4fbb52, _0x25d80a._0x2eb7a8)]((_0x20b499, _0x547b8f) => {
+                const _0x5f4073 = { _0x5f17a5: 0x236, _0x4be4ec: "&n&n", _0x4ffa69: "0mC1", _0x190da2: 0x1f8, _0x29a9d6: 0x1de, _0x1f80b4: "(ssW", _0x58d1ab: 0x1f2, _0x1ee117: "3(i8", _0xe830b7: 0x199, _0x2e7f54: "3(i8", _0xc1f16e: "8Ssu" },
+                  _0x2df807 = _0x3c9b74;
+                if (_0x20b499["latitude"] && _0x20b499[_0x2df807(_0x356ccd._0x4fb7a7, "6lT@")])
                   try {
-                    const _0x408784 = L[_0x593835(_0x13a118._0x38e783, _0x13a118._0x4f2d2d)]([_0x229bad[_0x593835(0x1e1, _0x13a118._0x24e0a8)], _0x229bad[_0x593835(0x17b, _0x13a118._0x4f2647)]], { kode_properti: _0x229bad[_0x593835(0x1ca, "JbYo")], icon: _0x3a8779(_0x229bad["label_harga_sewa"], _0x229bad[_0x593835(0x1c0, _0x13a118._0x3628e8)]) });
-                    _0x408784["on"](_0x593835(0x235, "VL0E"), function () {
-                      const _0x1d53be = { _0xc2720f: 0x246, _0x408dc2: 0x204, _0x17b9de: "QypG", _0x4c8eca: 0x22b, _0x3aac74: 0x1cb, _0x1886b2: "p@Sy" },
-                        _0x112ae0 = _0x593835;
-                      Swal[_0x112ae0(0x1e5, _0x9cf9ee._0x53484f)]({
-                        title: _0x112ae0(0x170, _0x9cf9ee._0x305250),
+                    const _0x5be09b = L["marker"]([_0x20b499[_0x2df807(_0x356ccd._0x3da8b3, _0x356ccd._0x110cc3)], _0x20b499["longitude"]], { kode_properti: _0x20b499[_0x2df807(0x15a, "f$Mf")], icon: _0x13c579(_0x20b499[_0x2df807(_0x356ccd._0x323ed2, "F)%2")], _0x20b499[_0x2df807(0x207, _0x356ccd._0x4d0825)]) });
+                    _0x5be09b["on"](_0x2df807(0x1ef, _0x356ccd._0x1a12e6), function () {
+                      const _0x2bba56 = _0x2df807;
+                      Swal["fire"]({
+                        title: _0x2bba56(0x22a, _0xeae831._0x582255),
                         html:
-                          _0x112ae0(0x20c, "sKZa") +
-                          _0x229bad[_0x112ae0(0x1c0, "LM9C")]
-                            [_0x112ae0(_0x9cf9ee._0x4bed18, _0x9cf9ee._0x569816)](/((https?:\/\/|www\.)[^\s]+)/g, (_0x4e9d4d) => {
-                              const _0x3c1f52 = _0x112ae0;
-                              if (_0x4e9d4d["startsWith"]("https://wa.me") || _0x4e9d4d[_0x3c1f52(_0x1d53be._0xc2720f, "y)K^")](_0x3c1f52(0x22d, "LM9C"))) return _0x3c1f52(_0x1d53be._0x408dc2, _0x1d53be._0x17b9de) + _0x4e9d4d + "%20-%20[" + _0x229bad[_0x3c1f52(_0x1d53be._0x4c8eca, "&eUY")] + _0x3c1f52(_0x1d53be._0x3aac74, "@#(U") + _0x4e9d4d + "</a>";
-                              return _0x3c1f52(0x1bd, "(*1Q") + _0x4e9d4d + _0x3c1f52(0x202, _0x1d53be._0x1886b2) + _0x4e9d4d + "</a>";
+                          _0x2bba56(0x229, "x^$k") +
+                          _0x20b499[_0x2bba56(0x1bf, _0xeae831._0x415599)]
+                            [_0x2bba56(_0xeae831._0x5717c1, "3(i8")](/((https?:\/\/|www\.)[^\s]+)/g, (_0x279e4d) => {
+                              const _0xad22a6 = _0x2bba56;
+                              if (_0x279e4d["startsWith"]("https://wa.me") || _0x279e4d[_0xad22a6(_0x5f4073._0x5f17a5, "YJyZ")](_0xad22a6(0x1b0, _0x5f4073._0x4be4ec))) return _0xad22a6(0x222, _0x5f4073._0x4ffa69) + _0x279e4d + _0xad22a6(_0x5f4073._0x190da2, "48OG") + _0x20b499["nomer"] + "]\x22\x20target=\x22_blank\x22\x20class=\x22text-blue-700\x20underline\x22>" + _0x279e4d + _0xad22a6(_0x5f4073._0x29a9d6, _0x5f4073._0x1f80b4) + _0x20b499[_0xad22a6(_0x5f4073._0x58d1ab, _0x5f4073._0x1ee117)] + "]</a>";
+                              return _0xad22a6(0x187, "bV3X") + _0x279e4d + _0xad22a6(_0x5f4073._0xe830b7, _0x5f4073._0x2e7f54) + _0x279e4d + _0xad22a6(0x206, _0x5f4073._0xc1f16e);
                             })
-                            ["replaceAll"]("\x0a", _0x112ae0(0x19e, "L7of")) +
-                          _0x112ae0(_0x9cf9ee._0x11c44e, "mIXQ") +
-                          _0x229bad["nomer"] +
-                          _0x112ae0(_0x9cf9ee._0x1c4df0, "2VH9"),
-                        customClass: { confirmButton: _0x112ae0(0x1fb, "fPl$") },
+                            [_0x2bba56(0x1cb, "TKWw")]("\x0a", _0x2bba56(0x204, _0xeae831._0x1d238b)) +
+                          _0x2bba56(0x1d5, "Vyld") +
+                          _0x20b499[_0x2bba56(0x211, _0xeae831._0x2dd24b)] +
+                          _0x2bba56(_0xeae831._0x5ba197, _0xeae831._0x3a98c5),
+                        customClass: { confirmButton: _0x2bba56(_0xeae831._0x4bc3c5, "eAnb") },
                         buttonsStyling: ![],
                       });
                     }),
-                      _0x3c177d[_0x593835(0x226, "adRj")](_0x408784);
-                  } catch (_0x158361) {
-                    console[_0x593835(_0x13a118._0x1a4d95, _0x13a118._0x483460)](_0x158361, _0x560739, _0x229bad[_0x593835(0x193, _0x13a118._0x1bc6e9)]);
+                      _0x6da4ba[_0x2df807(0x1c1, _0x356ccd._0x472b33)](_0x5be09b);
+                  } catch (_0x32224b) {
+                    console[_0x2df807(_0x356ccd._0x4b1bef, "9ZUD")](_0x32224b, _0x547b8f, _0x20b499[_0x2df807(_0x356ccd._0x46ad9b, "48OG")]);
                   }
               }),
-              _0x4453e2[_0x34b27d(0x22f, _0x30333b._0x3c52f1)](_0x3c177d);
-          } catch (_0x5340a5) {
-            console[_0x34b27d(_0x30333b._0x3a3800, "fPl$")](_0x34b27d(_0x30333b._0x4404d8, _0x30333b._0x2fc728), _0x5340a5);
+              _0x10a4a2[_0x3c9b74(_0x25d80a._0x2567e3, _0x25d80a._0x3bb780)](_0x6da4ba);
+          } catch (_0x2de452) {
+            console["error"](_0x3c9b74(_0x25d80a._0x18aee2, _0x25d80a._0x39089b), _0x2de452);
           }
         })
-        [_0x1c02c5(0x16b, "VL0E")]((_0x264d62) => {
-          const _0x3c3c01 = { _0x4ff9ab: "QypG" },
-            _0x15e59d = _0x1c02c5;
-          console[_0x15e59d(0x224, _0x3c3c01._0x4ff9ab)]("Terjadi\x20kesalahan\x20saat\x20membaca\x20file:", _0x264d62);
+        ["catch"]((_0x3ce4db) => {
+          const _0x12a1a9 = { _0x33f6a0: "48OG" },
+            _0x1ea10e = _0x20d6eb;
+          console[_0x1ea10e(0x197, "n&JH")](_0x1ea10e(0x18c, _0x12a1a9._0x33f6a0), _0x3ce4db);
         });
-      const _0xce4925 = document[_0x1c02c5(0x1d7, "y)K^")](_0x1c02c5(0x23c, "L7of"));
-      _0x3615fc[_0x1c02c5(0x18f, "2VH9")]((_0x3615d7) => {
-        const _0x48de8c = { _0x277342: "y)K^", _0x480cc1: "r&d[", _0x2ec604: "uuQl", _0x1896ae: 0x190, _0x495ed5: "wWWX", _0x291f35: 0x175, _0x1061f4: "LAay", _0x3d356d: 0x231, _0x29b77f: "W9PZ", _0x1564ad: 0x1e9, _0x49e33a: "VL0E", _0x3b0371: 0x245, _0xabdf5: "VL0E", _0x582524: 0x1e2, _0x33c19c: "@Y2r", _0x39e628: "!Q&3", _0x3cf55e: 0x1ef, _0x1b2def: "L7of", _0x2035e5: "OD@u" },
-          _0x3580a2 = { _0x381baa: 0x197, _0x3f5769: "(*1Q" },
-          _0x1ff976 = _0x1c02c5,
-          _0xd39e2 = document["createElement"]("div");
-        _0xd39e2["className"] = "h-full\x20w-full\x20flex\x20flex-col\x20items-center\x20bg-white\x20rounded-xl\x20shadow-md\x20p-4\x20cursor-pointer\x20border\x20border-solid\x20border-gray-200\x20hover:bg-gray-100\x20transition";
-        const _0x2c6e67 = document[_0x1ff976(0x1c5, "LM9C")]("img");
-        (_0x2c6e67[_0x1ff976(0x233, "uuQl")] = _0x3615d7["logo"]), (_0x2c6e67[_0x1ff976(0x215, "fPl$")] = _0x3615d7[_0x1ff976(0x228, "@#(U")]), (_0x2c6e67[_0x1ff976(0x1a4, _0x48de8c._0x277342)] = _0x1ff976(0x1b4, _0x48de8c._0x480cc1));
-        const _0x1ecf41 = document["createElement"]("h2");
-        (_0x1ecf41["className"] = _0x1ff976(0x16e, "p@Sy")), (_0x1ecf41["textContent"] = _0x3615d7["nama_singkatan_tempat"]);
-        const _0x29171d = document[_0x1ff976(0x183, _0x48de8c._0x2ec604)]("p");
-        (_0x29171d[_0x1ff976(_0x48de8c._0x1896ae, _0x48de8c._0x495ed5)] = _0x1ff976(_0x48de8c._0x291f35, _0x48de8c._0x1061f4)),
-          (_0x29171d[_0x1ff976(_0x48de8c._0x3d356d, _0x48de8c._0x29b77f)] = _0x3615d7[_0x1ff976(_0x48de8c._0x1564ad, _0x48de8c._0x49e33a)]),
-          _0xd39e2[_0x1ff976(_0x48de8c._0x3b0371, _0x48de8c._0xabdf5)](_0x2c6e67),
-          _0xd39e2[_0x1ff976(_0x48de8c._0x582524, _0x48de8c._0x33c19c)](_0x1ecf41),
-          _0xd39e2[_0x1ff976(0x230, _0x48de8c._0x39e628)](_0x29171d),
-          _0xd39e2[_0x1ff976(_0x48de8c._0x3cf55e, _0x48de8c._0x1b2def)](_0x1ff976(0x211, _0x48de8c._0x2035e5), () => {
-            const _0x5ec282 = _0x1ff976;
-            _0x4453e2["setView"]([_0x3615d7["lat"], _0x3615d7[_0x5ec282(0x1a6, "FMCt")]], 0xf);
-            const _0x545c9f = document[_0x5ec282(_0x3580a2._0x381baa, "VrIR")]("map");
-            _0x545c9f[_0x5ec282(0x1f1, "wWWX")]({ behavior: _0x5ec282(0x189, _0x3580a2._0x3f5769), block: "start" });
+      const _0x4e921b = document[_0x20d6eb(0x1f3, "ebp^")](_0x20d6eb(0x168, "bV3X"));
+      _0xac51be[_0x20d6eb(0x21a, "9ZUD")]((_0x1dbc86) => {
+        const _0x2e8300 = { _0x3f01da: "0]YQ", _0x294e15: 0x178, _0x1e947f: "F)%2", _0x4ef3d2: "^#Ro", _0x29b68a: 0x173, _0x3780c4: 0x1a7, _0x188408: 0x1b8, _0x3bd047: ")LX7", _0xfe19b1: 0x22c, _0x2aa6cd: "RwVy", _0x12d892: 0x179, _0x2a9586: "x^$k", _0x4c68a8: "ebp^", _0x49d2a4: "6lT@", _0x1283ce: 0x1e9, _0x2a8aa3: "TKWw", _0x4a81bb: 0x20c, _0x1a2499: "!R$7", _0x16208f: "ZtzF", _0x27a9f2: 0x216, _0xfda48d: "fLsD", _0x1f24f8: "n&JH", _0x46e59e: 0x1a0, _0x44ca60: "(ssW", _0x524d8f: 0x18f, _0x203333: "iOAg", _0x5aeb61: 0x1f5, _0x1ff46d: 0x221 },
+          _0x3eaeb0 = { _0x152572: 0x1f0, _0x216552: 0x1b1, _0x2349d0: 0x1dd, _0x2c3002: "eAnb", _0x5149f0: 0x190, _0xb907d0: 0x1b4, _0x227f63: "TKWw", _0x57b414: "48OG", _0x398f0f: 0x1cf },
+          _0x4d3f2c = _0x20d6eb,
+          _0x9cb31b = document[_0x4d3f2c(0x210, "K[AY")](_0x4d3f2c(0x1fa, _0x2e8300._0x3f01da));
+        _0x9cb31b["className"] = _0x4d3f2c(_0x2e8300._0x294e15, _0x2e8300._0x1e947f);
+        const _0x37d82e = document[_0x4d3f2c(0x1b9, _0x2e8300._0x4ef3d2)](_0x4d3f2c(_0x2e8300._0x29b68a, "4xbu"));
+        (_0x37d82e[_0x4d3f2c(_0x2e8300._0x3780c4, "!g7Q")] = _0x1dbc86["logo"]), (_0x37d82e[_0x4d3f2c(_0x2e8300._0x188408, "Wdb#")] = _0x1dbc86[_0x4d3f2c(0x218, _0x2e8300._0x3bd047)]), (_0x37d82e[_0x4d3f2c(_0x2e8300._0xfe19b1, _0x2e8300._0x2aa6cd)] = _0x4d3f2c(_0x2e8300._0x12d892, "!R$7"));
+        const _0x25faa6 = document[_0x4d3f2c(0x1fe, _0x2e8300._0x2a9586)]("h2");
+        (_0x25faa6[_0x4d3f2c(0x21e, _0x2e8300._0x4c68a8)] = _0x4d3f2c(0x1c7, _0x2e8300._0x49d2a4)), (_0x25faa6[_0x4d3f2c(_0x2e8300._0x1283ce, _0x2e8300._0x2a8aa3)] = _0x1dbc86["nama_singkatan_tempat"]);
+        const _0x1c36f6 = document[_0x4d3f2c(_0x2e8300._0x4a81bb, _0x2e8300._0x1a2499)]("p");
+        (_0x1c36f6[_0x4d3f2c(0x22c, "RwVy")] = _0x4d3f2c(0x234, _0x2e8300._0x16208f)),
+          (_0x1c36f6[_0x4d3f2c(_0x2e8300._0x27a9f2, _0x2e8300._0xfda48d)] = _0x1dbc86[_0x4d3f2c(0x1c8, _0x2e8300._0x1f24f8)]),
+          _0x9cb31b["appendChild"](_0x37d82e),
+          _0x9cb31b[_0x4d3f2c(_0x2e8300._0x46e59e, _0x2e8300._0x44ca60)](_0x25faa6),
+          _0x9cb31b[_0x4d3f2c(_0x2e8300._0x524d8f, "wv^U")](_0x1c36f6),
+          _0x9cb31b[_0x4d3f2c(0x202, _0x2e8300._0x203333)](_0x4d3f2c(_0x2e8300._0x5aeb61, _0x2e8300._0x1f24f8), () => {
+            const _0xfa48b1 = _0x4d3f2c;
+            _0x10a4a2["setView"]([_0x1dbc86[_0xfa48b1(_0x3eaeb0._0x152572, "oCdw")], _0x1dbc86[_0xfa48b1(_0x3eaeb0._0x216552, "0]YQ")]], 0xf);
+            const _0x6ae270 = document[_0xfa48b1(_0x3eaeb0._0x2349d0, _0x3eaeb0._0x2c3002)](_0xfa48b1(_0x3eaeb0._0x5149f0, "F)%2"));
+            _0x6ae270[_0xfa48b1(_0x3eaeb0._0xb907d0, _0x3eaeb0._0x227f63)]({ behavior: _0xfa48b1(0x1c5, _0x3eaeb0._0x57b414), block: _0xfa48b1(_0x3eaeb0._0x398f0f, "d(Tj") });
           }),
-          _0xce4925["appendChild"](_0xd39e2);
+          _0x4e921b[_0x4d3f2c(_0x2e8300._0x1ff46d, "K[AY")](_0x9cb31b);
       });
-      function _0x5a58bb(_0x283dec, _0x42c0ba, _0x2d6380) {
-        const _0x26ca8b = { _0x570e7c: 0x185, _0x6443da: 0x239, _0x14aa64: "vp)H", _0x20ee7b: 0x164, _0x1ad9f4: "VrIR", _0x3ff2a0: 0x23d, _0x5d147f: 0x225, _0x10eb9b: "JXZ(", _0x35f822: 0x1d0, _0x33247f: 0x1a5, _0x31af0e: 0x182, _0x43e7f7: "roOD", _0x4fe0a6: 0x1b6, _0x19d817: "wWWX", _0x57136d: 0x191 },
-          _0x289b1f = _0x1c02c5;
-        if (_0x283dec[_0x289b1f(0x21e, "&eUY")]() == _0x289b1f(0x1e6, "@#(U")) return "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-white\x20hover:bg-gray-100\x20shadow-md\x20p-4\x20py-6\x20rounded-xl\x20flex\x20border-4\x20border-green-500\x20flex\x20flex-row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22w-full\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<a\x20class=\x22text-lg\x20font-semibold\x20text-green-600\x22>" + marked["parse"](_0x2d6380) + "</a>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-sm\x20text-gray-600\x22>" + _0x42c0ba + _0x289b1f(_0x26ca8b._0x570e7c, "l&VC");
-        if (_0x283dec[_0x289b1f(_0x26ca8b._0x6443da, _0x26ca8b._0x14aa64)]() == _0x289b1f(_0x26ca8b._0x20ee7b, _0x26ca8b._0x1ad9f4)) return _0x289b1f(_0x26ca8b._0x3ff2a0, "GDr6") + marked[_0x289b1f(_0x26ca8b._0x5d147f, _0x26ca8b._0x10eb9b)](_0x2d6380) + "</a>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-sm\x20text-gray-600\x22>" + _0x42c0ba + "</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20";
-        if (_0x283dec["toLowerCase"]() == _0x289b1f(_0x26ca8b._0x35f822, "roOD")) return _0x289b1f(_0x26ca8b._0x33247f, "fPl$") + marked[_0x289b1f(_0x26ca8b._0x31af0e, _0x26ca8b._0x43e7f7)](_0x2d6380) + _0x289b1f(_0x26ca8b._0x4fe0a6, _0x26ca8b._0x19d817) + _0x42c0ba + "</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20";
-        return _0x289b1f(_0x26ca8b._0x57136d, "W9PZ") + marked[_0x289b1f(0x17e, _0x26ca8b._0x19d817)](_0x2d6380) + "</a>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p\x20class=\x22text-sm\x20text-gray-600\x22>" + _0x42c0ba + _0x289b1f(0x192, "r&d[");
+      function _0x47c2af(_0xbd3c87, _0x604ad1, _0xf7719d) {
+        const _0x3210e2 = { _0x1d8506: "4xbu", _0x23cf2c: 0x17d, _0x520f62: "!g7Q", _0x145267: "ux1i", _0x53a2b8: 0x1af, _0x33f497: 0x23d, _0x15c026: "nQqq", _0x53d51b: 0x18b, _0x571180: 0x1b6, _0xa9dace: 0x23f, _0x3e910b: 0x208, _0x2b99f0: 0x230, _0x1847ee: "Wdb#", _0x3a507e: 0x1a3, _0x2cd168: "(ssW", _0x32fa30: 0x1ea },
+          _0x2d5cb5 = _0x20d6eb;
+        if (_0xbd3c87[_0x2d5cb5(0x1fd, _0x3210e2._0x1d8506)]() == "green") return _0x2d5cb5(0x186, "8![4") + marked["parse"](_0xf7719d) + _0x2d5cb5(_0x3210e2._0x23cf2c, "%bq0") + _0x604ad1 + _0x2d5cb5(0x21d, _0x3210e2._0x520f62);
+        if (_0xbd3c87[_0x2d5cb5(0x238, _0x3210e2._0x145267)]() == _0x2d5cb5(_0x3210e2._0x53a2b8, _0x3210e2._0x1d8506)) return "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22bg-white\x20hover:bg-gray-100\x20shadow-md\x20p-4\x20py-6\x20rounded-xl\x20flex\x20border-4\x20border-yellow-500\x20flex\x20flex-row\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22w-full\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<a\x20class=\x22text-lg\x20font-semibold\x20text-yellow-600\x22>" + marked[_0x2d5cb5(_0x3210e2._0x33f497, _0x3210e2._0x15c026)](_0xf7719d) + _0x2d5cb5(_0x3210e2._0x53d51b, "x^$k") + _0x604ad1 + "</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20";
+        if (_0xbd3c87[_0x2d5cb5(_0x3210e2._0x571180, "eAnb")]() == _0x2d5cb5(_0x3210e2._0xa9dace, _0x3210e2._0x15c026)) return _0x2d5cb5(_0x3210e2._0x3e910b, "n&JH") + marked[_0x2d5cb5(_0x3210e2._0x2b99f0, "n&JH")](_0xf7719d) + _0x2d5cb5(0x169, _0x3210e2._0x1847ee) + _0x604ad1 + _0x2d5cb5(_0x3210e2._0x3a507e, _0x3210e2._0x2cd168);
+        return _0x2d5cb5(0x1ba, "0]YQ") + marked["parse"](_0xf7719d) + _0x2d5cb5(_0x3210e2._0x32fa30, "3(i8") + _0x604ad1 + "</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20";
       }
-      function _0x1ffdc5(_0x358de3) {
-        const _0x51655c = { _0x48e9cd: 0x184, _0x3ab5b5: "!Q&3", _0x1a553a: "^iEZ", _0x1962d9: "adRj", _0x47ee5f: "oGuh", _0x49d6d9: "vp)H", _0x5b6db9: "fPl$", _0x6695d2: 0x1f4, _0x38ecfe: 0x222, _0x11503a: "vp)H" },
-          _0x582534 = _0x1c02c5,
-          _0xc23526 = [_0x582534(0x219, "adRj"), _0x582534(0x178, "TZeH"), "Maret", _0x582534(_0x51655c._0x48e9cd, _0x51655c._0x3ab5b5), _0x582534(0x1e3, _0x51655c._0x1a553a), _0x582534(0x208, _0x51655c._0x1962d9), _0x582534(0x1f3, "sqTF"), "Agustus", _0x582534(0x24c, _0x51655c._0x47ee5f), _0x582534(0x20a, _0x51655c._0x49d6d9), _0x582534(0x174, _0x51655c._0x5b6db9), "Desember"],
-          _0xefd23a = new Date(_0x358de3);
-        return _0xefd23a[_0x582534(0x168, "^iEZ")]() + "\x20" + _0xc23526[_0xefd23a[_0x582534(_0x51655c._0x6695d2, "6kBB")]()] + "\x20" + _0xefd23a[_0x582534(_0x51655c._0x38ecfe, _0x51655c._0x11503a)]();
+      function _0x14e6ea(_0x26bb31) {
+        const _0x5e5f32 = { _0x2ed3e6: 0x214, _0x48ad2e: "(ssW", _0x5c0ab2: "0]YQ", _0xbac0e4: 0x1fb, _0x52fba5: "FxoN", _0x514e3d: "#dd]", _0x59dee6: 0x1a8, _0x494f9d: 0x1ca, _0x28f0ff: "YJyZ", _0x1240ab: "oCdw", _0x22351d: 0x201, _0x3a04f0: "iFxm", _0x2f244a: 0x158, _0x173ff5: "6lT@", _0x242063: 0x235, _0x369990: "Wdb#" },
+          _0x490f10 = _0x20d6eb,
+          _0x1e448b = [_0x490f10(_0x5e5f32._0x2ed3e6, _0x5e5f32._0x48ad2e), _0x490f10(0x23c, _0x5e5f32._0x5c0ab2), _0x490f10(_0x5e5f32._0xbac0e4, _0x5e5f32._0x52fba5), _0x490f10(0x194, "YJyZ"), _0x490f10(0x1d3, _0x5e5f32._0x514e3d), _0x490f10(_0x5e5f32._0x59dee6, "ux1i"), _0x490f10(_0x5e5f32._0x494f9d, "ebp^"), _0x490f10(0x1e8, _0x5e5f32._0x28f0ff), "September", "Oktober", _0x490f10(0x1c4, _0x5e5f32._0x1240ab), _0x490f10(_0x5e5f32._0x22351d, _0x5e5f32._0x3a04f0)],
+          _0x1743e4 = new Date(_0x26bb31);
+        return _0x1743e4[_0x490f10(_0x5e5f32._0x2f244a, _0x5e5f32._0x173ff5)]() + "\x20" + _0x1e448b[_0x1743e4[_0x490f10(_0x5e5f32._0x242063, _0x5e5f32._0x369990)]()] + "\x20" + _0x1743e4[_0x490f10(0x1cd, "6lT@")]();
       }
-      function _0x55ae() {
-        const _0x3cb9e0 = [
-          "lrWKWQ4gW5vPWP4",
-          "WObCWQLjWRCiWPmQW4RcICoY",
-          "WQy9WQq",
-          "WOJdR8kOmJSzW4mgo3ldNmooWODxwCo5xe1WWR0B",
-          "WQpcSxbG",
-          "oSoiWQOJuG",
-          "itBdQq",
-          "WQuZqL4",
-          "WOdcJeewsgtdV3WQCJ3cNfGgW4bOamoutq",
-          "WOJdVLXRxG",
-          "W5SEW5/dLbLjWO7dRW",
-          "WPfovCo7hxdcH385uSoaF3hcSmkTW7JcSc/cPCoyvSoU",
-          "WONdRrJcLbWVuq",
-          "WRSOsf4",
-          "W4FcHCoaf8ooWP7cNMP/jmkNWQ9iWOxcJSkB",
-          "WOryxSoQrdlcJW",
-          "ewuSWQvVjCoxECk2ymkgbHhdIW",
-          "WOzjWQ1GWRGvWRuWW5a",
-          "WPvaW51p",
-          "l8kTfYf7fSorWRG",
-          "u8odDmkgsG",
-          "WOq2WQ7cKtDwW6y",
-          "dJ/cQg4hrqG",
-          "WPJdR8kZng8rW5S",
-          "W43cJSokjSokWPRcM2DgjSo6WRXeWP/cG8kCwfBcSCoX",
-          "oIHmm8kgnCkKAvSCEM3dQgNcJmoWDNtdPCkjW7G7W6GzWOC",
-          "D2P4kbZcUGWIW4ibWRGDW7tdQSkyW7yKst0NDSorjYO4nCkXo8oJW6XZaG",
-          "dcDrjSkl",
-          "C2FcJvbXmwGF",
-          "W4mphSkNxgBcILy3tSkwsW",
-          "aCkkfCk8",
-          "p8kPmvuwWQ7dLCoW",
-          "yCkvWR94nLargCoLWOtcI0BcPCkQW5TpvCoYW6JcTupcJCoGsmkJWPBcG8kDj1WQWR5oW7NcO8o/W5r8W7FdGu9aW7ilWRRcU8k8ymo5W7qDWPBdKbS",
-          "WQbCW5NdKt8QW4ldKHe/puPUph9xpxDTeG9Fgmo2smouWQNdLMqbdCo7cCoIWRFdU8o8i8oboSolqHNcLCo3WOZdNSouW6Ww",
-          "W7u2WQJdQYy8hSkvWPZdN2JcV8ou",
-          "WQyHW4xcHuKXWOuLW7a",
-          "WQKtWPRcUSoYW4BdLqLi",
-          "bvJcUImRW6m7WQD5d8knWRO",
-          "W6xcHCoNW449W5TRaCoSW41UjSkQW7msW5eLW64EWPRdUWWAW41pWRrkiW",
-          "cWG+WQ4",
-          "ebCcW5veWPlcGmkBW4SmW4/cGCkDWRhdTWHNjfNdRCorbmooqJ1uwSkVWRbHEHJdMheUxSo3W6RcRmknxLRdP8oXWO/dMapdLHfIW4ZcI8ojWRPHW6NdImohscOxkCo+W4tdU8kagW3dMZ7dV3qXWOXpWRTujSkMWRddSwRdKSofh05vW4pcJCoEW5ddQWxcI8odW6e3WR4ci8kAa8oLBYlcGLirW49sEcldNrJdUGddMSkfWOpcMctcM8kIrmkhC3m7vXPKW4Dyvmo0WRdcSdVcHd4PjmoeWO0oWQvbW5JcOsFcQXZdSSooWOpdNCkgWOxdRaddVCkAkH9yWPPiySowe8kivL1SWOFcP3VcImk2WRzTxdFcHmoDg2zXgWyzkCofefeoWRnpaSkCWRTeWOrMWQHhtSkfjSoptCoTz8oOW4nlWPOUWQFdHuTcW5j0WQ3cMCoDFd3dICob",
-          "W7n/dCoOc8o9W6G",
-          "vCoDz8kAs8oQWQDGWQO",
-          "ctzJd8kkvZVcTxbfWQj0k17cP2ykW5bupConCCkruNy6WQfuW6pcQ8kcW6e7WPhcUhvvhmkAW7PrsKy/WPldUSkNsH0BE8oHWRKjW78RwSkzWR9heYtdJMWGW6BdLtRcJSo9W6nBW5GNWPS",
-          "jcDinCkwnmo3vueuEIddHW",
-          "jtNdVvVcJrin",
-          "iHe5WQqz",
-          "zxKXASolfhm",
-          "WPnrt8o9aG",
-          "WR4DWRa",
-          "FvjwWRaiW5FdJCocW4erW7VdMmk3WRK",
-          "WRjuW4nnWPHW",
-          "DgeH",
-          "W6OvW4NdLcGJ",
-          "w3jX",
-          "WPRdQGFcJqL2vN3cOmk4DG",
-          "cXW+WRitW5jK",
-          "WPnrr8oTgHpcGMmQ",
-          "qWhdUMn/",
-          "WQdcN0bjW4HUftzBic00WOa",
-          "WOOOWR3cMdbrW45OWPpdQKi",
-          "mCotwSktWOTaW4/cM8oPWRO0",
-          "lCkPm2iEWQRdLq",
-          "WObFWQPjWQ1dWRWTW4tcISk5WQi0mSo8dbvAWOiBlKVcSCkWymkciCkyW7m",
-          "Amk0jeawWQBdKW",
-          "W5TXdCobhmo0W7BcLf8UWRe",
-          "W4JcULddGuH1vvFcQmkLzeC",
-          "W78YWPFcGKK",
-          "WRDGW6pcOxq",
-          "ibK0WOStW5LOWOK",
-          "WQK1qvZcOsGyWPFdLSkk",
-          "m8oBWQiNyWnyv8kIW4/dIHldPmoKWQqBemk/WRJdTbC",
-          "D34Mqq",
-          "bmkfn8oEcCksW7P+WRO3k1JdMa",
-          "k8otE8kzWO4",
-          "W5KTW6FdQJ4DW7ddJ31ekvbgef92DJPkpb92m8kcoSoxWQRdSW",
-          "WPtdVSkKnMvBWOajktpdN8oF",
-          "WQSuWPFcTCo2W5pdHW1DWOxdUvGdwHpcVmoLvs/dJN1qp8oAt8kUW6rmaSkUhGf7W7tcNNtcMSkQEw8",
-          "WQtcVgzjd8o9tca",
-          "WOtcL8o4o8oHWOiRaItdLSko",
-          "oCoFWRWiW6TBbmo2W44DWPi",
-          "WQ/cIeTpW4HJ",
-          "Auvb",
-          "oCoSq0WBW6Pgvmot",
-          "WO3cGuuuFa",
-          "WQTKW7/cTwvI",
-          "W7tdRduZcCoNBZziia",
-          "WRiyWQtcK8kCbmoRj8owWP3dH1auWQ7cH8oA",
-          "W4H7nCoOhSo9W6JcJLS8WQy",
-          "yNiNE8of",
-          "WPRdG8kqWOmN",
-          "W4hcK8onnSkvWPJcN3bhlmk9WRviWPK",
-          "W7hcQeJdMf1SfdhdOCo2pqBcUmoKW45IWQWuW7a3WRJcQdxcMJzKEqVdT8kVW5xcQmoYWRyeWRhcKmoCWQNdI0RdPmoRW70JWR7dHqmwW4BcQgFcTMTrW6egW7D7mIvgW7pcV1ddNeC6WPzJCMb2W7zggCkTD8k8sKxcJSkejrNdNmkDaKTrWRfaWRxdNCo0jSk5WQmJWPtcMhyWWOfyxSk1W5eOWP40n8oxWRfFoSojrcPmsCk3WR0SpwvkW6mEWR10W4ldUwrDWOZcGSo7WRuKW5JcJZaQj21VW4KBWP3dMIXsAbtcGee6F8o4kSkQo8kUcZzNWOGmAGtcKcqJh2X8W4BdHHJcHHOwW6WWWQNdLg9rc3v8W4G6jmoZW4FcNCkInCkkW6RcOwOnWO1RaCowx8ohWOrrc8oPl8kXW7zbgmkmW54BW5NcGSoyc8ojWOpdRLz3W6NcISoyma",
-          "WPhcImo4lmoMWOeahG",
-          "jZNcTNK",
-          "WOStw8osWQ9y",
-          "WQW1x0pcVtLhWOldNmknE8kSW7GK",
-          "W6PBW6VdHSopW5FdQ8ovWRZcNSk9W457AY4nmH9ZWRpdPSkVWRDbWRtcHW",
-          "WQjZW6pcVwm",
-          "WRKHquxcTW",
-          "WO/cNvWsEwZdMxOKDtG",
-          "WRu0WR3cPvBcGeHtkcO",
-          "W4ZcKSolpmoSWP7cIgPJiCk1WRjdWR/cJSkrtHRcT8oMC3hcI8olW7edWQdcG8k8WP3cGmkaW4lcNW",
-          "yhKTw8olfg/cUdiqW6a2zXVcQJzfWOabBCoajCoucIi",
-          "s11WW6DsWOaTW5VdLLpdKbjCW69XgGLEmmoqW4VcHH/cV8ojy8kVs8o1W7NdGf8YWQpdIZZdI8owE8oXWOxdINxdRCkTumkEsu5vxmk2ihNcVmoYyCkdW6JdRSoKWPmUWOn7WR08FCobwmkFgfhcNmoOW4BdQGtcS34GiHRcMCkvWQPcuSkYW4xcNCo8WOZdLSksgJ/cPxDFWOxcHJddN8kGWOGRae4lumkWcSkIuLrevHreWO3cGaqGWO0fhSoNWQZdH2KgW5BcNhdcMCoPW7C/W4pdR2DydX1SqCowW5T5W6/dGSkdqGxcOHVdIG",
-          "W5VcM8oiW5D9W7JdQmoJhKSDgSop",
-          "fSkkeCk8W5hdIq",
-          "W5OoWQ4tWPqdjCoVya",
-          "wSoqCSkatmotWQP2",
-          "WRddHSkNWPP6W4WZhCofW5all8kG",
-          "WP4twCozWRrh",
-          "ua/dPMr7WRagW7PBb8kQWOFdMc5t",
-          "W5lcImoqpSoD",
-          "WR1yvmo0bIZcIMi3",
-          "WOW9WRNcUt9bW6G",
-          "W6HHf8oGdSoTW7BcUK8JWRBcVCoK",
-          "WReItCovWRddKSkxW63cI8ovfW",
-          "WO3cJfGuFW",
-          "EuPSdCoFkwxdMt3dQ8k/WOxdVmoIWQHeW5BcGmkgWQmPW6m0W6RcPSk7WPVcOmo2WPOaWRxdIhT9cq",
-          "W4BcMSo9W4yRWP1Pcq",
-          "W7yzW5xdHgaHW4dcHKPYdfWVlNrrDJvHeGOmh8kUeSouW6hdIwjnfSk6rmk3WQO",
-          "WRJdMCoKWPvdW5qNtSkRWOjHvSoLWR9BWP9GWQnFWPRcT0nDWOjbW7Gligz4CmkvW4W3W5DhycbgzSkPW47dIwbMWQFcSYO",
-          "WQFcG0OyzwxdU2eK",
-          "mu3dJmk8W5FdIq",
-          "WQBcT2XXc8oQxq",
-          "WPHpq8o4",
-          "w2iJkGpcUrb9",
-          "yuP1h8kEp3ZdLctdR8k1WPRcTmo3W7DnW4ddM8owW6e0WQ8VW6tcV8k8W5/dRSoJWOyBWQddNW",
-          "W6FcRa4KdgldSmkPWONdQ3X4WPRdUSoAv8kiW4VdO1FcRSoRW7LrwCoOW4LqW7ZcLGa",
-          "W5TzxCkhW6u6WRldRSoqeJbKW7XaWPqsWOJcOXrCWQhdMs3dMfyYW4RdPCkPW64Ga8o+WQaAWRv3zSoHW4qiW7RdHahcJepdQCkdqSkiW78iu8ogW6ioyCoZWPGSW6/cP8k6WQ00W5mKCW",
-          "WOxcIeDAW4LQiJm",
-          "vWNdVG",
-          "WQSuWPFcSmo+W4a",
-          "WR8tWQ7cSCkdfCoWn8o/",
-          "lCkVm0i",
-          "v8oceCk+W4lcKvFdP8ksW5KUqSoQkCoQWOdcSCkjWRmJW4rVW7K+FeVcO8kcumkYfL46W58GleBcVZZcGxzYWRdcTHpcNGL7Dgr7WPz9W5FdHNzVWRZcIIK9WR3cRmoGnLPOWPRdKLipoCoPW7xcLCoaW53cSSkQW6FdSmkdWPRdHIvKW6lcG3pcQ8oMqr8Rcua",
-          "eMCSWRLM",
-          "W4KMuSoMWRq",
-          "Ch8NibW",
-          "lbWIWQWxW5i",
-          "o8kNm1qA",
-          "EuvhWPqqW5FdPColW4OiW5ZdJ8kk",
-          "WQtcL8o6n8oJ",
-          "ChJdQqddV31lW4K9WRnSeCo8qmk+B04Fue9skmkGrdv2amosnqXYW48xWP17CKKlDYiDDhqdbZxdRKlcQmoIWQ3cKmkuW4ddNSoyjN0MvCkN",
-          "WPGXvSoLWQtdGCk9",
-          "hsneiCkA",
-          "W6tcGmoin8ozWONcMNfalmkMWRi",
-          "WR3dS8ouW57dJCoP",
-          "c2GWWQ9XaCokwSko",
-          "W5P7c8occmo7W7i",
-          "WRuvWPRcPSkZW5pdGqLiWOZcQGWNsXRcTSkOxcFdNNfek8ozdSknWQq",
-          "p1NdNa",
-          "ECo0CHDgWOldI8o8nW7dUa",
-          "WOVdO1XbtshcUa",
-          "awO/WRLWb8o/ESkN",
-          "r8kAW6rCWOGusSkIWOTtW4yMW6ldVtZcQdddVrqlW67cH1ZcH8kJyCoFy3NdVSolW4ddP3ePkCkMFsPyW4hdS8kfnCk+WPlcSSkDDayCW77dIc/cU8oGWONdK8kZWOpdMSoyWP1vWQpdI3SsWQPIiSkpCfTaW4ldQmoWW63cOd8hh8oGqKZdU8oIf8kOW5j7cmozd0RdGmouW4b+W7xcI8kaWP9kfSoxjfldUmoPW4LzWQe/CSkmW7JcRGddMqhdPSkgW5RdNmkcbmk5W7FdGgdcTCkDW7hdMaNdIrCTWPdcPSk6W4dcI8oBDSocWRBcI07dSmoSWQDFAHKXW7j2wmofWRLwWPpcS8oTWQtcNeSpWRnWW7y8muZcJGFcJrhcHmkhWOCqW7bTW5aaemo4A2u6fmkbb27dVftdN2ZdN33dHSozWQddV8oTzbddPcKmr8kQlmoSWQDVBIfxwmk1oSoGj8k7iaBdOW",
-          "Fx/cQcmJsWzUggz8D1pcOYL1W40eW7OpWRqpt8k2Fu14iHv4bSk2zmoIWR7cICk5y8k9gSojWOpcLCo5fmo+WRJcTePLWQJdHmocjrpdLLZdTKDYtG",
-          "W5uSxSoNWR/dSCk3WRSbhxNdUaddHSoSpG",
-          "E0rrWPaqWP3dJmoiW4GkWPBdTmk8W73dUHrZDLxdQSksoa",
-          "W7uZWQldOIHbxCkoWPNdLua",
-          "DLjmWPiqW5O",
-          "WOatqCoWWRDvW7/cQ8kErLi9WPue",
-          "WPRdPCkIa3CcW4C",
-          "WOlcIe0rE23dRJ8GEc7cH2iaWOHTh8odxmoPW6PvWQukjCkvzfGOzvPmEtmm",
-          "k8ovWQCjW5SogCoQW4OxWOLXW6/cS3pdUJe",
-          "o8k4dWvG",
-          "W48nWQJdJxiDWQO",
-          "WOJdPCk3ixOe",
-          "WPRcG8owBa",
-          "o3m0WRhdQs/dNCo9WQtcNM4",
-          "qSozy8kh",
-          "W4xcHCoNlmoRWOmAsI/dLCkyzSk8WOeldZm2WRZcTmk/W7THW5tdK8oyzCk9W7NdHCoGamkZWQfhmmoRWOxdNbZcLSk2tf01h8ofpmolmcbbg8kHW7q",
-          "WQWOtelcKsqoWPFdSSkq",
-          "lZVdUe3cHHecWPPP",
-          "WQuSWR3cPfhcVx5xoq",
-          "hY11B07dU1uVW5arWQGDWQtcSSkvW7jGudiQj8kDndy+zSo3pmoGW6X8bSkCWR/cLmk2W6lcM2tdVKONWPddP8kOkbmOqbizbHJdH8kvW41zW40kfmkzlSkhWRrzW6FdQmorWRHxc8odwqpcJxmystRcMmoQt8oUfcJdPH5mmajqWPTLW6FcGhCOzmkLzCkjWONcJXVdRar9W7DyW5CgeWTEW6eTaCkdW6ZdT8kiW6BdNc/cT8k1WRiPsNlcMCoFW7ddSgW3W4NdPSkce3fCzSkDb0VdGGqBAmkUFK7cGqBcGSkVu3RdU8orW4JcP8o2WQ/cI8kZWP04AxBcOa0HW4yAiwVcStlcLGFdHeW8fZpcQ8kGW6pcIMaSW5tcNmk4W43cG8kemXvzChxdLaC/EmklWPuaFSkBmmkSW6uNW61yWRhcLxLak3bqc1nnWQu",
-          "W4SlW7K",
-          "o8kTdWL3dmkx",
-          "fmkra8k3W4lcGXVdKCkXW6TpbmkRpSoNWR7cOmkFW7XOW5GJW6zIl0NcRW",
-          "r8kAW6rCWOGusSkIWOTtW4yMW6ldVtZcThtcTeilWQ3dL1NcNCkMFmkEBx/cOmopWPxcQxePCCk6pZbyW5xcVCohnmo/WPdcUmoCA0DiWRBdLwZcP8oKW4JdKmk9WOtdMSkhW55lW5NdHM8sW7O7l8kzCaKpWPFcPSk0WQJdPdjFu8oGbadcVSk6f8o2W5u7tmoFeqBcH8khWP82W7pcISkDWPLkcCojzu3cUSkYWO1eW6m2CSknWQFcSa",
-          "WO4/umoxWOhcHW",
-          "C386iI3cSXr9WRnEW6Xy",
-          "W5WIWPa",
-          "W7yLWOVcIK88",
-          "iZFdTw9mdWT/chz8iXBdU314WP9bWR4cWQWdua",
-          "WOZcICoMo8o9WQ48jWe",
-          "WQTOW7/cT3b4",
-          "WQBcT2XXhmoRrq",
-          "kCkSbZH7",
-          "W48UWOZcM14MWPbXWQBcO8kqW4qpDCkur8kEDSo+W5FdJCoqCsJdLf0",
-          "kx3dQsSjbKj0ugTUy1pdRMT4W54",
-          "z3C3tSo1fx7dPZKrW6m",
-          "xIK/W7qjACk+n8oIl8oWt1tcNmoNW5pcSSkyWQpdI1yZemkNWPxdM8kurM/cSb7dJmolhLCJW4tdIeS9yrOoWQNdVCowl8k9W5NdNu5ulZxcVSoG",
-          "WRqLWRVcVK3cNq",
-          "WPvsWQFdOCoXWRJcJalcP8kKlYZcPW",
-          "nCotWQSIwr4",
-          "WRqFuSoaWQLrWR/cQCkfqhe",
-          "BL5wWPKb",
-          "jJxcRffih2OGxW",
-          "W7ldV8kBW5NdI8oKf8oRiq",
-          "WRRcJf8EFgxdU3y4",
-          "WRrIWPrPWOS",
-          "WPJdR8kJlwqiW59vna",
-          "W4hcHmoqf8ouWP7cNxTDoCkwWQjKWO8",
-          "WOysuCoHWRq",
-          "W7qDW4hdHsG",
-          "WPFcGSo8k8o9WOHiqIVdJ8keyCkTWPPje357WRe",
-          "WP/dUmk1j2ieW6PkohddL8ouW54",
-          "q8oAqSoHWOFcNdZdHmklW6aZna",
-          "W7eVhCkIWO7dJ8k9WR4Cxa7dRG3dJCoOjSkv",
-          "W7eXWQFdOca8qSktWPNdLM3cLq",
-          "yHldKmoNWOBcRCktWPLoux3dQHxcVatcR381W6CYCb7dHKKPWPhdILHDjCkelqz0pmoPeCkRW40PW7e+W41tWR3cQY9zW5jTWOlcQe3cNbtdTtZdR8kVt3uxkSkEW5O",
-          "mfldLCkWW4O",
-          "amkyW68YxqjwxmkXWPNcItNdP8oMWPObhSoWW6JdTG/dJmkZg8k+WPtdL8oyFXr3W7XbW6dcP8kHWPbXW6dcLv9wW6jdWQ/cPCk0D8kXW6et",
-          "W7FcK8oGW70GWPfW",
-          "W5CsW4tdHIG/W5tdJ1H8eqHllN1DCNDagWLjgCkIsSoTWQ3dM3XnaCo2xmokW7VcOmkLEmobbSohvb3cJ8oYWOG",
-          "WRJdOKDYstdcO8oGW53cQI94W63cS8kEdSojWOZcOHRdR8oRWPqqfCk1WOHt",
-          "WRJdMCoKWPvdW5qNtSkRWOjHvSoLWR9BWP9GWR9qW57dVHvd",
-          "oCkJjq",
-          "mrWIWRqx",
-          "WODbWP/cKuqqW5FdUCkjzJFcJKW",
-          "W6GyWQ0cWOvbk8oLDCoiW6tcGmoKWQ7dGHVdRISvgmoVlmk3",
-          "W6uUq8okWPZdImkkW7ZcLq",
-          "WRfJe8kIW63cJSoZW7PvxaBcVvJcHCkPCSkCraXpfaXTW4FdJmohW5JdM3zRWRzGwSoWgIpdG8o1WQ3dU1fPcCkvWRieamoYf8oBtgK1iWJcMdtcNHtdQCoDhLdcUGmBWQxdRf5BW7/dVmk+vv7cJqdcGg7cMuqJW5nmWPr6dCkaE8keWPdcJCoRWP0pxSkwmaxcPSoTnSk/W5b+yIX/W6HLW4/dVmozvCobf0iwprJdM17dMSocs8o1WO5MWRhcRYhcGhJcLr4xWP4",
-          "hSoTqf53W6zAeCovWPnEWO5bkCkndmk8hhBcPZBcMmoQW78",
-          "WQeLWQJcKK7cLNjFmJzOW57dOCkc",
-          "AKjaWPKnW4hdImodW44rW5W",
-          "g8kVlu4xW6NdISoTlGFdPY3dUW",
-          "qMqPqmozfMNdVa",
-          "cZZdTJ16bemLwtqYofpdI2GHWPLfW7OhW4DgcmkZybi",
-          "B3mTsmoEhW",
-          "W7y1WQBdPhzPBCksWQFdJW",
-          "WP89WRxcIq",
-          "WRhcT2vIaSoH",
-          "W4XnWQVcJSolW7VdUJu",
-        ];
-        _0x55ae = function () {
-          return _0x3cb9e0;
-        };
-        return _0x55ae();
-      }
-      fetch(_0x1c02c5(0x1a8, "[e4L"))
-        [_0x1c02c5(0x1ee, "QBVY")]((_0x293ea6) => _0x293ea6[_0x1c02c5(0x1e8, "QBVY")]())
-        [_0x1c02c5(0x1ff, "[e4L")]((_0x1d878b) => {
-          const _0x88c6e7 = { _0x2d346d: "!Q&3", _0x2a84b4: 0x1b5, _0x36a6cc: "sKZa", _0x318dbd: "vp)H" },
-            _0x2a3713 = { _0x39b863: 0x1d8, _0x3bfa13: "uuQl", _0x5705d0: "L7of", _0x1a3715: 0x21a, _0x197fcf: "OD@u", _0x3e5d86: "JbYo", _0x299f03: 0x241, _0xd2c932: "QBVY", _0x22e1df: 0x1f6 },
-            _0x4c3c2e = { _0xb2f456: "uuQl", _0x4b428b: 0x172, _0x443d91: "%(Ne" },
-            _0x244d64 = _0x1c02c5,
-            _0x298635 = document["getElementById"]("news-container");
-          (_0x298635[_0x244d64(0x1af, _0x88c6e7._0x2d346d)] = ""),
-            _0x1d878b[_0x244d64(_0x88c6e7._0x2a84b4, _0x88c6e7._0x36a6cc)][_0x244d64(0x18b, _0x88c6e7._0x318dbd)]((_0x2d2f2d) => {
-              const _0x170bdf = _0x244d64,
-                _0x1fb06d = _0x1ffdc5(_0x2d2f2d[_0x170bdf(_0x2a3713._0x39b863, _0x2a3713._0x3bfa13)]),
-                _0x3be276 = document["createElement"](_0x170bdf(0x179, "tENP"));
-              (_0x3be276[_0x170bdf(0x18a, "wWWX")] = _0x5a58bb(_0x2d2f2d["badgecolor"], _0x1fb06d, _0x2d2f2d[_0x170bdf(0x166, _0x2a3713._0x5705d0)])),
-                _0x3be276[_0x170bdf(_0x2a3713._0x1a3715, _0x2a3713._0x197fcf)][_0x170bdf(0x18d, _0x2a3713._0x3e5d86)](_0x170bdf(_0x2a3713._0x299f03, _0x2a3713._0xd2c932)),
-                (_0x3be276[_0x170bdf(_0x2a3713._0x22e1df, "^iEZ")] = function () {
-                  const _0x36e89f = _0x170bdf;
-                  _0x5982c6(_0x2d2f2d[_0x36e89f(0x1bb, _0x4c3c2e._0xb2f456)], _0x1fb06d, _0x2d2f2d[_0x36e89f(_0x4c3c2e._0x4b428b, _0x4c3c2e._0x443d91)]);
+      fetch(_0x20d6eb(0x19f, "4xbu"))
+        [_0x20d6eb(0x1f1, "!R$7")]((_0x24067f) => _0x24067f[_0x20d6eb(0x1db, "3(i8")]())
+        [_0x20d6eb(0x174, "Vyld")]((_0x2fdedf) => {
+          const _0xe0d1c9 = { _0x4339d4: 0x1ec, _0x20e96b: "zdLv" },
+            _0x4e518 = { _0x155a4e: 0x240, _0x5cbbd7: "ZtzF", _0xfcae68: 0x151, _0x4a66b0: 0x219, _0xc267a6: "x^$k", _0x4f4fb3: 0x21c, _0x1cb858: "ebp^", _0x340c11: 0x14e },
+            _0x1de460 = _0x20d6eb,
+            _0x445cf9 = document[_0x1de460(_0xe0d1c9._0x4339d4, "ifsm")](_0x1de460(0x188, _0xe0d1c9._0x20e96b));
+          (_0x445cf9[_0x1de460(0x17b, "BGpU")] = ""),
+            _0x2fdedf[_0x1de460(0x17e, "#dd]")]["forEach"]((_0x27a2eb) => {
+              const _0x1fd8d8 = _0x1de460,
+                _0xa270ed = _0x14e6ea(_0x27a2eb[_0x1fd8d8(_0x4e518._0x155a4e, "6lT@")]),
+                _0x581f09 = document[_0x1fd8d8(0x15e, _0x4e518._0x5cbbd7)](_0x1fd8d8(0x183, "6lT@"));
+              (_0x581f09[_0x1fd8d8(_0x4e518._0xfcae68, "0mC1")] = _0x47c2af(_0x27a2eb["badgecolor"], _0xa270ed, _0x27a2eb[_0x1fd8d8(0x155, "ZtzF")])),
+                _0x581f09[_0x1fd8d8(_0x4e518._0x4a66b0, _0x4e518._0xc267a6)]["add"](_0x1fd8d8(0x1ff, _0x4e518._0x5cbbd7)),
+                (_0x581f09[_0x1fd8d8(_0x4e518._0x4f4fb3, _0x4e518._0x1cb858)] = function () {
+                  const _0x4b9910 = _0x1fd8d8;
+                  _0x26ca6b(_0x27a2eb[_0x4b9910(0x192, "#dd]")], _0xa270ed, _0x27a2eb["content"]);
                 }),
-                _0x298635["appendChild"](_0x3be276);
+                _0x445cf9[_0x1fd8d8(_0x4e518._0x340c11, "3c6p")](_0x581f09);
             });
         })
-        [_0x1c02c5(0x1fc, "#G(k")]((_0x22ce27) => console[_0x1c02c5(0x1f5, "8$9k")]("Error\x20loading\x20news:", _0x22ce27));
-      function _0x5982c6(_0x358925, _0xcd264b, _0x37d949) {
-        const _0x1bf5a2 = { _0x156994: 0x17c, _0x1a655f: 0x1a9, _0x26b4fb: "W9PZ", _0x31271b: 0x177, _0x4f373d: 0x16f, _0x555a16: "gOI0", _0x565c21: 0x19a },
-          _0x244770 = _0x1c02c5;
-        Swal[_0x244770(_0x1bf5a2._0x156994, "roOD")]({ html: _0x244770(_0x1bf5a2._0x1a655f, _0x1bf5a2._0x26b4fb) + marked[_0x244770(0x21b, "tENP")](_0x358925) + _0x244770(_0x1bf5a2._0x31271b, "VrIR") + _0xcd264b + _0x244770(0x201, "@#(U") + marked["parse"](_0x37d949) + _0x244770(_0x1bf5a2._0x4f373d, _0x1bf5a2._0x555a16), showCloseButton: !![], showConfirmButton: ![], customClass: { closeButton: _0x244770(_0x1bf5a2._0x565c21, _0x1bf5a2._0x26b4fb) } });
+        [_0x20d6eb(0x1bb, "#dd]")]((_0x305275) => console["error"](_0x20d6eb(0x1d9, "d(Tj"), _0x305275));
+      function _0x26ca6b(_0x15f27b, _0x7542db, _0x363b15) {
+        const _0x18276b = { _0x33611d: "MYry", _0x2b7eb3: 0x20b, _0x46009c: "nQqq" },
+          _0x228797 = _0x20d6eb;
+        Swal[_0x228797(0x156, _0x18276b._0x33611d)]({ html: _0x228797(0x1a6, "BGpU") + marked["parse"](_0x15f27b) + _0x228797(0x205, "lSB#") + _0x7542db + _0x228797(_0x18276b._0x2b7eb3, _0x18276b._0x46009c) + marked[_0x228797(0x181, "3(i8")](_0x363b15) + _0x228797(0x18e, "ZtzF"), showCloseButton: !![], showConfirmButton: ![], customClass: { closeButton: "focus:shadow-none" } });
       }
-      document["getElementById"]("contact-button")[_0x1c02c5(0x238, "b7^v")](_0x1c02c5(0x20f, "adRj"), function () {
-        const _0x358b89 = { _0xc94130: "L7of", _0x3fa78a: 0x1df, _0xa3b1f5: "%(Ne", _0x4e43c9: 0x248, _0x462f6c: 0x216, _0x21f1e6: "p@Sy" },
-          _0x39a4be = _0x1c02c5;
-        document[_0x39a4be(0x1c1, _0x358b89._0xc94130)](_0x39a4be(0x165, "tENP"))[_0x39a4be(0x20b, "8$9k")][_0x39a4be(_0x358b89._0x3fa78a, _0x358b89._0xa3b1f5)](_0x39a4be(0x1b9, "@#(U")), document["getElementById"](_0x39a4be(_0x358b89._0x4e43c9, "sKZa"))[_0x39a4be(0x1a3, "l&VC")][_0x39a4be(0x19d, "LM9C")](_0x39a4be(_0x358b89._0x462f6c, _0x358b89._0x21f1e6));
+      document[_0x20d6eb(0x237, "ux1i")](_0x20d6eb(0x1ce, "fLsD"))[_0x20d6eb(0x185, "zdLv")](_0x20d6eb(0x150, "M7DP"), function () {
+        const _0xf06401 = { _0x4f944e: "Vyld", _0x251632: 0x23a, _0x34ea64: 0x154, _0x56936f: "3(i8", _0x573c72: 0x237, _0x1cc073: "ux1i", _0x1c5984: 0x16e, _0xa891a: 0x195, _0x4fbb54: "f$Mf" },
+          _0x53704f = _0x20d6eb;
+        document[_0x53704f(0x232, _0xf06401._0x4f944e)](_0x53704f(_0xf06401._0x251632, "ux1i"))[_0x53704f(_0xf06401._0x34ea64, "oCdw")][_0x53704f(0x182, _0xf06401._0x56936f)]("hidden"), document[_0x53704f(_0xf06401._0x573c72, _0xf06401._0x1cc073)]("contact-bubble-popup-text")[_0x53704f(_0xf06401._0x1c5984, "n&JH")]["toggle"](_0x53704f(_0xf06401._0xa891a, _0xf06401._0x4fbb54));
       });
-      function _0x15da93() {
-        const _0x57a25d = { _0x1d903a: "p@Sy", _0x32aedb: 0x1f2, _0x37ea03: "@Y2r", _0x1a41a8: "r&d[", _0xdf20e5: 0x1cc, _0x336836: 0x1bc, _0x49667b: 0x1ea, _0x1d992b: "2VH9", _0x5b92c4: 0x1f7, _0x533740: "M^wT", _0x17b965: "!Q&3", _0x524a4e: 0x1ae, _0x570f50: "r&d[", _0x2e71d6: 0x1e4, _0x24f613: 0x1f0 },
-          _0x4dfb16 = _0x1c02c5;
-        var _0x328628 = document[_0x4dfb16(0x213, "uuQl")]("kode_rumah")[_0x4dfb16(0x1c3, _0x57a25d._0x1d903a)],
-          _0xf74964 = _0x3c177d[_0x4dfb16(_0x57a25d._0x32aedb, _0x57a25d._0x37ea03)]()[_0x4dfb16(0x23f, _0x57a25d._0x1a41a8)]((_0x548ae9) => _0x548ae9["options"]["kode_properti"] == _0x328628);
-        _0xf74964 ? _0x4453e2[_0x4dfb16(_0x57a25d._0xdf20e5, "gOI0")](_0xf74964[_0x4dfb16(_0x57a25d._0x336836, "r&d[")](), 0x12) : Swal["fire"]({ icon: _0x4dfb16(_0x57a25d._0x49667b, _0x57a25d._0x1d992b), title: _0x4dfb16(_0x57a25d._0x5b92c4, "r&d["), text: _0x4dfb16(0x18c, _0x57a25d._0x533740), customClass: { popup: _0x4dfb16(0x1a1, _0x57a25d._0x17b965), confirmButton: _0x4dfb16(_0x57a25d._0x524a4e, _0x57a25d._0x570f50), title: _0x4dfb16(_0x57a25d._0x2e71d6, "LM9C"), content: _0x4dfb16(_0x57a25d._0x24f613, "OD@u") } });
-      }
-    </script>
-  </body>
-</html>
+      function _0x3c1157() {
+        const _0x40931b = { _0x4b3f07: "ifsm", _0xa65091: "#dd]", _0x326d66: "Vyld", _0x57d050: "#dd]", _0x4dcabb: 0x203, _0x2b1df0: "bV3X", _0x15cd75: 0x1eb, _0x44c50d: "3c6p", _0x3b84b3: 0x19a, _0xd7c3c8: "MYry", _0x53d21a: "#dd]", _0x4f135b: "^#Ro", _0x51711b: 0x15b },
+          _0x482d49 = _0x20d6eb;
+        var _0x935a52 = document[_0x482d49(0x23e, "BGpU")]("kode_rumah")[_0x482d49(0x225, _0x40931b._0x4b3f07)],
+          _0x3b27e2 = _0x6da4ba[_0x482d49(0x1a4, "bV3X")]()["find"]((_0x37aa09) => _0x37aa09[_0x482d49(0x21f, "M7DP")]["kode_properti"] == _0x935a52);
+        _0x3b27e2 ? _0x10a4a2[_0x482d49(0x1c6, _0x40931b._0xa65091)](_0x3b27e2[_0x482d49(0x1b2, _0x40931b._0x326d66)](), 0x12) : Swal[_0x482d49(0x1be, _0x40931b._0x57d050)]({ icon: _0x482d49(_0x40931b._0x4dcabb, _0x40931b._0x2b1df0), title: _0x482d49(_0x40931b._0x15cd75, _0x40931b._0x44c50d), text: _0x482d49(_0x40931b._0x3b84b3, _0x40931b._0xd7c3c8), customClass: { popup: _0x482d49(0x1aa, _0x40931b._0x53d21a), confirmButton: _0x482d49(0x1e3, _0x40931b._0x4f135b), title: "text-xl\x20font-semibold", content: _0x482d49(_0x40931b._0x51711b, "oCdw") } });
+      }</script>
