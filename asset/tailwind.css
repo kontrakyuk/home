@@ -693,6 +693,10 @@ video {
   height: 4rem;
 }
 
+.h-\[60vh\] {
+  height: 60vh;
+}
+
 .h-auto {
   height: auto;
 }
@@ -1271,6 +1275,10 @@ video {
 
   .md\:h-24 {
     height: 6rem;
+  }
+
+  .md\:h-\[80vh\] {
+    height: 80vh;
   }
 
   .md\:h-fit {
