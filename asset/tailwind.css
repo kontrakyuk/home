@@ -1159,9 +1159,9 @@ video {
   color: rgb(245 245 245 / var(--tw-text-opacity));
 }
 
-.text-neutral-600 {
+.text-neutral-700 {
   --tw-text-opacity: 1;
-  color: rgb(82 82 82 / var(--tw-text-opacity));
+  color: rgb(64 64 64 / var(--tw-text-opacity));
 }
 
 .text-neutral-800 {
