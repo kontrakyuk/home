@@ -657,6 +657,10 @@ video {
   margin-bottom: 1.5rem;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -679,6 +683,10 @@ video {
 
 .flex {
   display: flex;
+}
+
+.table {
+  display: table;
 }
 
 .grid {
@@ -730,10 +738,6 @@ video {
   width: 4rem;
 }
 
-.w-4 {
-  width: 1rem;
-}
-
 .w-4\/5 {
   width: 80%;
 }
@@ -754,6 +758,10 @@ video {
   width: 150px;
 }
 
+.w-\[50\%\] {
+  width: 50%;
+}
+
 .w-\[98px\] {
   width: 98px;
 }
@@ -768,6 +776,10 @@ video {
 
 .max-w-md {
   max-width: 28rem;
+}
+
+.border-collapse {
+  border-collapse: collapse;
 }
 
 .transform {
@@ -840,12 +852,6 @@ video {
   margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
-.space-x-8 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(2rem * var(--tw-space-x-reverse));
-  margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-y-reverse: 0;
   margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
@@ -897,11 +903,6 @@ video {
   border-style: solid;
 }
 
-.border-\[\#982f3b\] {
-  --tw-border-opacity: 1;
-  border-color: rgb(152 47 59 / var(--tw-border-opacity));
-}
-
 .border-gray-200 {
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
@@ -920,6 +921,11 @@ video {
 .border-red-300 {
   --tw-border-opacity: 1;
   border-color: rgb(252 165 165 / var(--tw-border-opacity));
+}
+
+.border-red-800 {
+  --tw-border-opacity: 1;
+  border-color: rgb(153 27 27 / var(--tw-border-opacity));
 }
 
 .bg-gray-100\/70 {
@@ -961,6 +967,11 @@ video {
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));
 }
 
+.bg-red-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(153 27 27 / var(--tw-bg-opacity));
+}
+
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
@@ -980,12 +991,12 @@ video {
   fill: #1f2937;
 }
 
-.fill-red-500 {
-  fill: #ef4444;
+.fill-none {
+  fill: none;
 }
 
-.fill-white {
-  fill: #fff;
+.fill-red-500 {
+  fill: #ef4444;
 }
 
 .stroke-gray-400 {
@@ -1142,6 +1153,11 @@ video {
 
 .tracking-wide {
   letter-spacing: 0.025em;
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 
 .text-blue-700 {
@@ -1379,6 +1395,10 @@ video {
 
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .md\:grid-cols-4 {
