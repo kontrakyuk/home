@@ -740,6 +740,10 @@ video {
   width: 2rem;
 }
 
+.w-\[0\.8rem\] {
+  width: 0.8rem;
+}
+
 .w-\[120px\] {
   width: 120px;
 }
@@ -748,8 +752,8 @@ video {
   width: 150px;
 }
 
-.w-\[98px\] {
-  width: 98px;
+.w-\[1rem\] {
+  width: 1rem;
 }
 
 .w-full {
@@ -810,6 +814,10 @@ video {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.gap-0 {
+  gap: 0px;
 }
 
 .gap-1 {
@@ -1131,6 +1139,10 @@ video {
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+
+.text-\[0\.8rem\] {
+  font-size: 0.8rem;
 }
 
 .text-\[1rem\] {
