@@ -756,6 +756,11 @@ video {
   width: 1rem;
 }
 
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .w-full {
   width: 100%;
 }
@@ -1015,6 +1020,10 @@ video {
 
 .stroke-gray-400 {
   stroke: #9ca3af;
+}
+
+.stroke-gray-800 {
+  stroke: #1f2937;
 }
 
 .stroke-red-500 {
